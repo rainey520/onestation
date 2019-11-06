@@ -1,0 +1,407 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row col-sm-6">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="col-sm-12 search-collapse">
+                        <form id="formId">
+                            <div class="select-list">
+                                <ul>
+                                    <li>
+                                        line：
+                                        <select id="lineId" name="lineId" th:with="lineList=${@productionLine.selectAllProductionLineByCompanyId()}">
+                                            <option value="0">Please choose</option>
+                                            <option th:each="line:${lineList}" th:utext="${line.lineName}" th:value="${line.id}"></option>
+                                        </select>
+                                    </li>
+                                    <li>
+                                        product：
+                                        <select id="productCode" name="productCode" th:with="proList=${@product.selectProductAll()}">
+                                            <option value="">Please choose</option>
+                                            <option th:each="pro:${proList}" th:utext="${pro.productCode}" th:value="${pro.productCode}"></option>
+                                        </select>
+                                    </li>
+                                    <li class="select-time">
+                                        <label>Creation time： </label>
+                                        <input type="text" class="time-input" id="startTime" placeholder="startTime"
+                                               name="params[beginTime]"/>
+                                        <span>-</span>
+                                        <input type="text" class="time-input" id="endTime" placeholder="endTime"
+                                               name="params[endTime]"/>
+                                    </li>
+                                    <li>
+                                        <a class="btn btn-primary btn-rounded btn-sm" onclick="searchData(0)"><i class="fa fa-search"></i>&nbsp;View chart</a>
+                                        <a class="btn btn-primary btn-rounded btn-sm" onclick="searchData(1)"><i class="fa fa-search"></i>&nbsp;View report</a>
+                                        <a class="btn btn-warning btn-rounded btn-sm" onclick="formReset()"><i class="fa fa-refresh"></i>&nbsp;Reset</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+                        <span class="badge badge-primary">Report history</span>
+                    </div>
+                    <div class="col-sm-12 select-table table-striped">
+                        <table id="bootstrap-table" data-mobile-responsive="true"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row col-sm-6">
+            <div class="col-sm-12" style="margin-top: 10px;">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Achievement rate display</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="echarts" id="analysis"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Man hour utilization display</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="echarts" id="timeHour"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:src="@{/ajax/libs/report/echarts-all.js}"></script>
+<script th:inline="javascript">
+    $("#lineId").select2({
+        width:"200px",
+    });
+    $("#productCode").select2({
+        width:"200px",
+    });
+    // 重置搜索表单信息
+    function formReset(params) {
+        $('#formId')[0].reset();//input标签重置
+        $("#lineId").val(0).trigger("change"); // select2标签重置
+        $("#productCode").val(null).trigger("change");
+        initData([],[]);
+        initTimeHour([],[]);
+    }
+
+    var removeFlag = [[${@permission.hasPermi('erp:fileSourceInfo:remove')}]];
+    var listFlag = [[${@permission.hasPermi('erp:fileSourceInfo:list')}]];
+    var editFlag = [[${@permission.hasPermi('erp:fileSourceInfo:add')}]];
+    var prefix = ctx + "iso/fileSource";
+    var data = {
+        saveType: 14,
+        pageSize: 8,
+        pageNum: 1
+    }
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            modalName: "Document management",
+            queryParams: function (p) {
+                var params = {};
+                params.beginTime = $("#startTime").val();
+                params.endTime = $("#endTime").val();
+                var search = {};
+                search.saveType = data.saveType;
+                search.params = params;
+                search.pageSize = p.limit;
+                search.pageNum = p.offset / p.limit + 1;
+                search.searchValue = p.search;
+                search.orderByColumn = p.sort;
+                search.isAsc = p.order;
+                return search;
+            },
+            search: false,
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            showExport: false,
+            sortName:'createTime',
+            sortOrder:'desc',
+            columns: [
+                {
+                    field: 'id',
+                    title: '主键，自增长',
+                    visible: false
+                },
+                {
+                    field: 'fileName',
+                    title: 'fileName',
+                },
+                {
+                    title: 'operation',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-default btn-xs ' + listFlag + '" href="javascript:void(0)" onclick="showReportFile(\'' + row.filePath + '\')"><i></i>查看</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editFileName(\'' + row.id + '\',\'' + row.fileName + '\')"><i></i>修改</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i></i>删除</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        initTable(options, "bootstrap-table");
+
+        initData([],[]);
+        initTimeHour([],[]);
+    });
+
+    /**
+     * 搜索数据
+     */
+    function searchData(val) {
+        var startTime = $("#startTime").val();
+        var endTime = $("#endTime").val();
+        if ($.common.isEmpty(startTime) || $.common.isEmpty(endTime)) {
+            $.modal.alertWarning("Start end time is required");
+            return;
+        }
+        var data = {
+            startTime:startTime,
+            endTime:endTime,
+            lineId:$("#lineId").find("option:selected").val(),
+            productCode:$("#productCode").find("option:selected").val()
+        }
+        if (val == 0) {
+            var config = {
+                url: ctx + "production/cost/searchData",
+                type: "post",
+                dataType: "json",
+                data: data,
+                beforeSend: function () {
+                    $.modal.loading("Processing, please wait...");
+                },
+                success: function (result) {
+                    if (result.code == 1) {
+                        // 展示图一数据
+                        initData(result.data.xData,result.data.yData);
+                        // 展示图二数据
+                        initTimeHour(result.data.xDataTwo,result.data.yDataTwo);
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                    $.modal.closeLoading();
+                }
+            };
+            $.ajax(config)
+        } else {
+            var config = {
+                url: ctx + "production/cost/searchReport",
+                type: "post",
+                dataType: "json",
+                data: data,
+                beforeSend: function () {
+                    $.modal.loading("Processing, please wait...");
+                },
+                success: function (result) {
+                    if (result.code == web_status.SUCCESS) {
+                        $.table.refresh(); // 重新刷新
+                        window.open(result.msg);
+                    } else {
+                        $.modal.alertError("request was aborted");
+                    }
+                    $.modal.closeLoading();
+                }
+            };
+            $.ajax(config)
+        }
+    }
+
+    function initData(category,item) {
+        var lineChart = echarts.init(document.getElementById("analysis"));
+        var lineoption = {
+            title : {
+                text: 'Average achievement rate'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['Average achievement rate']
+            },
+            grid:{
+                x:40,
+                x2:40,
+                y2:24
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    scale:true,
+                    boundaryGap : false,
+                    data : category
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    scale:true,
+                    axisLabel : {
+                        formatter: '{value}%'
+                    }
+                }
+            ],
+            series : [
+                {
+                    name:'Average achievement rate',
+                    type:'line',
+                    data: item,
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: 'max'},
+                            {type : 'min', name: 'min'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: 'average'}
+                        ]
+                    }
+                },
+            ]
+        };
+        lineChart.setOption(lineoption);
+        $(window).resize(lineChart.resize);
+    }
+
+    function initTimeHour(category,item) {
+        var lineChart = echarts.init(document.getElementById("timeHour"));
+        var lineoption = {
+            title : {
+                text: 'Man hour utilization'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['Man hour utilization']
+            },
+            grid:{
+                x:40,
+                x2:40,
+                y2:24
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    scale:true,
+                    boundaryGap : false,
+                    data : category
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    scale:true,
+                    axisLabel : {
+                        formatter: '{value}%'
+                    }
+                }
+            ],
+            series : [
+                {
+                    name:'Man hour utilization',
+                    type:'line',
+                    data: item,
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: 'max'},
+                            {type : 'min', name: 'min'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: 'average'}
+                        ]
+                    }
+                },
+            ]
+        };
+        lineChart.setOption(lineoption);
+        $(window).resize(lineChart.resize);
+    }
+
+    /**
+     * 查看报表文件
+     */
+    function showReportFile(filePath) {
+        window.open(filePath);
+    }
+
+    /**
+     * 修改文件名
+     * @param id
+     * @param fileName
+     */
+    function editFileName(id, fileName) {
+        var url = prefix + '/editFileName?id=' + id + "&fileName=" + fileName;
+        $.modal.open("Modify file name", url, '650', '300');
+    }
+
+    /**
+     * 初始化对应的表格
+     */
+    function initTable(options, id) {
+        $.table._option = options;
+        $.table._params = $.common.isEmpty(options.queryParams) ? $.table.queryParams : options.queryParams;
+        _sortOrder = $.common.isEmpty(options.sortOrder) ? "asc" : options.sortOrder;
+        _sortName = $.common.isEmpty(options.sortName) ? "" : options.sortName;
+        _pageSize = $.common.isEmpty(options.pageSize) ? 3 : options.pageSize;
+        _striped = $.common.isEmpty(options.striped) ? false : options.striped;
+        _escape = $.common.isEmpty(options.escape) ? false : options.escape;
+        _showFooter = $.common.isEmpty(options.showFooter) ? false : options.showFooter;
+        _fixedColumns = $.common.isEmpty(options.fixedColumns) ? false : options.fixedColumns;
+        _fixedNumber = $.common.isEmpty(options.fixedNumber) ? 0 : options.fixedNumber;
+        _rightFixedColumns = $.common.isEmpty(options.rightFixedColumns) ? false : options.rightFixedColumns;
+        _rightFixedNumber = $.common.isEmpty(options.rightFixedNumber) ? 0 : options.rightFixedNumber;
+        $('#' + id).bootstrapTable({
+            url: options.url,                                   // 请求后台的URL（*）
+            contentType: "application/x-www-form-urlencoded",   // 编码类型
+            method: 'post',                                     // 请求方式（*）
+            cache: false,                                       // 是否使用缓存
+            striped: _striped,                                  // 是否显示行间隔色
+            sortable: true,                                     // 是否启用排序
+            sortStable: true,                                   // 设置为 true 将获得稳定的排序
+            sortName: _sortName,                                // 排序列名称
+            sortOrder: _sortOrder,                              // 排序方式  asc 或者 desc
+            pagination: $.common.visible(options.pagination),   // 是否显示分页（*）
+            pageNumber: 1,                                      // 初始化加载第一页，默认第一页
+            pageSize: 8,                                // 每页的记录行数（*）
+            pageList: [8],                             // 可供选择的每页的行数（*）
+            escape: _escape,                                    // 转义HTML字符串
+            showFooter: _showFooter,                            // 是否显示表尾
+            iconSize: 'outline',                                // 图标大小：undefined默认的按钮尺寸 xs超小按钮sm小按钮lg大按钮
+            toolbar: '#toolbar',                                // 指定工作栏
+            sidePagination: "server",                           // 启用服务端分页
+            search: $.common.visible(options.search),           // 是否显示搜索框功能
+            showSearch: $.common.visible(options.showSearch),   // 是否显示检索信息
+            showRefresh: $.common.visible(options.showRefresh), // 是否显示刷新按钮
+            showColumns: $.common.visible(options.showColumns), // 是否显示隐藏某列下拉框
+            showToggle: $.common.visible(options.showToggle),   // 是否显示详细视图和列表视图的切换按钮
+            showExport: $.common.visible(options.showExport),   // 是否支持导出文件
+            fixedColumns: _fixedColumns,                        // 是否启用冻结列（左侧）
+            fixedNumber: _fixedNumber,                          // 列冻结的个数（左侧）
+            rightFixedColumns: _rightFixedColumns,              // 是否启用冻结列（右侧）
+            rightFixedNumber: _rightFixedNumber,                // 列冻结的个数（右侧）
+            queryParams: $.table._params,                       // 传递参数（*）
+            columns: options.columns,                           // 显示列信息（*）
+        });
+    }
+</script>
+</body>
+</html>

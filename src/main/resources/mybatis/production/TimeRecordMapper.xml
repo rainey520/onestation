@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.production.timeRecord.mapper.TimeRecordMapper">
+    
+    <resultMap type="TimeRecord" id="TimeRecordResult">
+        <result property="id"    column="id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="lineId"    column="line_id"    />
+        <result property="normalHour"    column="normal_hour"    />
+        <result property="normalNumber"    column="normal_number"    />
+        <result property="overtimeHour"    column="overtime_hour"    />
+        <result property="overtimeNumber"    column="overtime_number"    />
+        <result property="overtimeRace"    column="overtime_race"    />
+        <result property="changeHour"    column="change_hour"    />
+        <result property="recordDate"    column="record_date"    />
+        <result property="inputFlag"    column="input_flag"    />
+    </resultMap>
+	
+	<sql id="selectTimeRecordVo">
+        select id, company_id, line_id, normal_hour, normal_number, overtime_hour, overtime_number, overtime_race,
+        change_hour, record_date, input_flag from tab_time_record
+    </sql>
+	
+    <select id="selectTimeRecordList" parameterType="TimeRecord" resultMap="TimeRecordResult">
+        <include refid="selectTimeRecordVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="companyId != null "> and company_id = #{companyId}</if>
+             <if test="lineId != null "> and line_id = #{lineId}</if>
+             <if test="normalHour != null "> and normal_hour = #{normalHour}</if>
+             <if test="normalNumber != null "> and normal_number = #{normalNumber}</if>
+             <if test="overtimeHour != null "> and overtime_hour = #{overtimeHour}</if>
+             <if test="overtimeNumber != null "> and overtime_number = #{overtimeNumber}</if>
+             <if test="overtimeRace != null "> and overtime_race = #{overtimeRace}</if>
+             <if test="changeHour != null "> and change_hour = #{changeHour}</if>
+             <if test="recordDate != null "> and record_date = #{recordDate}</if>
+         </where>
+    </select>
+    
+    <select id="selectTimeRecordById" parameterType="Integer" resultMap="TimeRecordResult">
+        <include refid="selectTimeRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTimeRecord" parameterType="TimeRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_time_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="companyId != null  ">company_id,</if>
+			<if test="lineId != null  ">line_id,</if>
+			<if test="normalHour != null  ">normal_hour,</if>
+			<if test="normalNumber != null  ">normal_number,</if>
+			<if test="overtimeHour != null  ">overtime_hour,</if>
+			<if test="overtimeNumber != null  ">overtime_number,</if>
+			<if test="overtimeRace != null  ">overtime_race,</if>
+			<if test="changeHour != null  ">change_hour,</if>
+			<if test="recordDate != null  ">record_date,</if>
+            <if test="inputFlag != null  ">input_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="companyId != null  ">#{companyId},</if>
+			<if test="lineId != null  ">#{lineId},</if>
+			<if test="normalHour != null  ">#{normalHour},</if>
+			<if test="normalNumber != null  ">#{normalNumber},</if>
+			<if test="overtimeHour != null  ">#{overtimeHour},</if>
+			<if test="overtimeNumber != null  ">#{overtimeNumber},</if>
+			<if test="overtimeRace != null  ">#{overtimeRace},</if>
+			<if test="changeHour != null  ">#{changeHour},</if>
+			<if test="recordDate != null  ">#{recordDate},</if>
+            <if test="inputFlag != null  ">#{inputFlag},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateTimeRecord" parameterType="TimeRecord">
+        update tab_time_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="companyId != null  ">company_id = #{companyId},</if>
+            <if test="lineId != null  ">line_id = #{lineId},</if>
+            <if test="normalHour != null  ">normal_hour = #{normalHour},</if>
+            <if test="normalNumber != null  ">normal_number = #{normalNumber},</if>
+            <if test="overtimeHour != null  ">overtime_hour = #{overtimeHour},</if>
+            <if test="overtimeNumber != null  ">overtime_number = #{overtimeNumber},</if>
+            <if test="overtimeRace != null  ">overtime_race = #{overtimeRace},</if>
+            <if test="changeHour != null  ">change_hour = #{changeHour},</if>
+            <if test="recordDate != null  ">record_date = #{recordDate},</if>
+            <if test="inputFlag != null  ">input_flag = #{inputFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteTimeRecordById" parameterType="Integer">
+        delete from tab_time_record where id = #{id}
+    </delete>
+	
+    <delete id="deleteTimeRecordByIds" parameterType="String">
+        delete from tab_time_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--查看当天对应产线考勤录入信息-->
+    <select id="selectTimeRecordByLineIdToday" resultMap="TimeRecordResult">
+        <include refid="selectTimeRecordVo"/>
+        where company_id = #{companyId} and line_id = #{lineId}
+        and record_date BETWEEN DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+    </select>
+
+    <!--查询对应产线指定天的考勤汇总信息-->
+    <select id="selectTimeRecordByLineTime" resultMap="TimeRecordResult">
+        <include refid="selectTimeRecordVo"/>
+        where company_id = #{companyId} and line_id = #{lineId} and record_date = #{recordDate} limit 1;
+    </select>
+
+    <!--查询时间范围的考勤信息-->
+    <select id="selectTimeRecordListRangeTime" resultMap="TimeRecordResult">
+        <include refid="selectTimeRecordVo"/>
+        where company_id = #{companyId}
+        <if test="lineId > 0">
+            and line_id = #{lineId}
+        </if>
+        and record_date between #{startTime} and #{endTime};
+    </select>
+
+    <!--查询昨天的考勤信息-->
+    <select id="selectTimeRecordByLineIdYesterday" resultMap="TimeRecordResult">
+        <include refid="selectTimeRecordVo"/>
+        where company_id = #{companyId} and line_id = #{lineId}
+        and date(record_date) = date_sub(curdate(),interval 1 day) limit 1;
+    </select>
+    
+</mapper>

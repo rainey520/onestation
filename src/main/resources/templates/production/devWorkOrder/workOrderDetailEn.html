@@ -1,0 +1,208 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div id="work-order-detail" class="ibox-content" th:object="${devWorkOrder}">
+    <style type="text/css">
+        #work-order-detail .col-sm-4{
+            text-align: right;
+        }
+        #work-order-detail .row{
+            margin-top: 5px;
+        }
+    </style>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Work number:</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.workorderNumber}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Order number:</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.orderCode}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">line：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.param1}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">productCode：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.productCode}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Person liable 1:</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.param2}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">productName：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.productName}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Person liable 2：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.param3}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Planning start time：</label>
+            <div class="col-sm-6">
+                <span th:utext="${#dates.format(devWorkOrder.productionStart,'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Number of workers：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.peopleNumber}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Planned completion time：</label>
+            <div class="col-sm-6">
+                <span th:utext="${#dates.format(devWorkOrder.productionEnd,'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Normal working hours：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.workingHour}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Actual start time：</label>
+            <div class="col-sm-6">
+                <span th:utext="${#dates.format(devWorkOrder.startTime,'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Overtime work hours：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.overtimeHour}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Actual completion time：</label>
+            <div class="col-sm-6">
+                <span th:utext="${#dates.format(devWorkOrder.endTime,'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Overtime rate：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.overtimeRace}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Quantity of scrap：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.scrapNum}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Quantity of production：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.productNumber}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Quantity of defective products：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.badNumber}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Labour price：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.workPrice}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Production hours：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.signHuor}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Standard hourly output：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.productStandardHour}"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">creator：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.createBy}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Direct pass rate[%]：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.directPassRate}" readonly="true" type="text"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Rate of achievement[%]：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.reachRate}"  type="text"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-sm-6">Actual storage：</label>
+            <div class="col-sm-6">
+                <span th:utext="${devWorkOrder.actualWarehouseNum}" readonly="true" type="text"></span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-sm-6">Work order status：</label>
+            <div class="col-sm-6">
+                <span th:if="${devWorkOrder.workorderStatus == 0}" style="color: blue">Not started</span>
+                <span th:if="${devWorkOrder.workorderStatus == 1}" style="color: #00C1B3" >starting</span>
+                <span th:if="${devWorkOrder.workorderStatus == 2}" style="color: green" >Completed</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+    function submitHandler() {
+        $.modal.close();
+        // window.parent.$.table.refresh();
+    }
+</script>
+</body>
+</html>

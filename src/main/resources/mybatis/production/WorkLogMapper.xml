@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.production.devWorkOrder.mapper.WorkLogMapper">
+
+    <resultMap type="WorkLog" id="WorkLogResult">
+        <result property="id"    column="id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="workId"    column="work_id"    />
+        <result property="workNumber"    column="work_number"    />
+        <result property="workProduct"    column="work_product"    />
+        <result property="lineId"    column="line_id"    />
+        <result property="lineName"    column="line_name"    />
+        <result property="bzOutput"    column="bz_output"    />
+        <result property="sjOutput"    column="sj_output"    />
+        <result property="inputData"    column="input_data"    />
+        <result property="inputTime"    column="input_time"    />
+        <result property="totalOutput"    column="total_output"    />
+        <result property="workCode"    column="work_code"    />
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insertWorkLog" parameterType="WorkLog" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_work_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyId != null  ">company_id,</if>
+            <if test="workId != null  ">work_id,</if>
+            <if test="workNumber != null and workNumber != '' ">work_number,</if>
+            <if test="workProduct != null  and workProduct != ''  ">work_product,</if>
+            <if test="lineId != null  and lineId != ''  ">line_id,</if>
+            <if test="lineName != null and lineName != ''  ">line_name,</if>
+            <if test="bzOutput != null  and bzOutput != ''  ">bz_output,</if>
+            <if test="sjOutput != null and sjOutput != '' ">sj_output,</if>
+            <if test="inputData != null  ">input_data,</if>
+            <if test="inputTime != null  ">input_time,</if>
+            <if test="totalOutput != null  ">total_output,</if>
+            <if test="workCode != null  ">work_code,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyId != null  ">#{companyId},</if>
+            <if test="workId != null  ">#{workId},</if>
+            <if test="workNumber != null and workNumber != '' ">#{workNumber},</if>
+            <if test="workProduct != null  and workProduct != ''  ">#{workProduct},</if>
+            <if test="lineId != null  and lineId != ''  ">#{lineId},</if>
+            <if test="lineName != null and lineName != ''  ">#{lineName},</if>
+            <if test="bzOutput != null  and bzOutput != ''  ">#{bzOutput},</if>
+            <if test="sjOutput != null and sjOutput != '' ">#{sjOutput},</if>
+            <if test="inputData != null  ">#{inputData},</if>
+            <if test="inputTime != null  ">#{inputTime},</if>
+            <if test="totalOutput != null  ">#{totalOutput},</if>
+            <if test="workCode != null  ">#{workCode},</if>
+        </trim>
+    </insert>
+
+    <!--通过公司id和工单id查询录入明细列表-->
+    <select id="selectWorkLogListByWorkId" resultMap="WorkLogResult">
+        SELECT * FROM tab_work_log where company_id = #{companyId}
+        <if test="workId != null and workId != '' ">
+            and work_id = #{workId}
+        </if>
+        order by input_time desc
+    </select>
+
+    <select id="selectWorkLogListByWatchInfo" parameterType="WorkLog" resultMap="WorkLogResult">
+        SELECT * FROM tab_work_log where company_id = #{companyId}
+        <if test="workId != null and workId != '' ">
+            and work_id = #{workId}
+        </if>
+        order by input_time desc
+    </select>
+
+</mapper>

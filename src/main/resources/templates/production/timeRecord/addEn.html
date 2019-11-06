@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-timeRecord-add">
+			<input type="hidden" id="lineId" name="lineId" th:value="${lineId}">
+			<input type="hidden" id="daySign" name="daySign" th:value="${daySign}">
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">normalHour：</label>
+				<div class="col-sm-6">
+					<input id="normalHour" name="normalHour" class="form-control" type="number" onchange="sumNormalHouor()">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">normalNumber：</label>
+				<div class="col-sm-6">
+					<input id="normalNumber" name="normalNumber" class="form-control" type="number" onchange="sumNormalHouor()">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">overtimeHour：</label>
+				<div class="col-sm-6">
+					<input id="overtimeHour" name="overtimeHour" class="form-control" type="number" onchange="sumOvertimeHouor()">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">overtimeNumber：</label>
+				<div class="col-sm-6">
+					<input id="overtimeNumber" name="overtimeNumber" class="form-control" type="number" onchange="sumOvertimeHouor()">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">overtimeRace：</label>
+				<div class="col-sm-6">
+					<select id="overtimeRace" name="overtimeRace" class="form-control">
+						<option value="1.5">1.5</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">changeHour：</label>
+				<div class="col-sm-6">
+					<input id="changeHour" name="changeHour" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">sumNormal：</label>
+				<div class="col-sm-6">
+					<input id="sumNormal" name="sumNormal" class="form-control" type="number" readonly="readonly">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">sumNormal：</label>
+				<div class="col-sm-6">
+					<input id="sumOvertime" name="sumNormal" class="form-control" type="number" readonly="readonly">
+				</div>
+			</div>
+		</form>
+	</div>
+    <div th:include="include::footer"></div>
+    <script type="text/javascript">
+		var prefix = ctx + "production/timeRecord"
+		$("#form-timeRecord-add").validate({
+			rules:{
+				xxxx:{
+					required:true,
+				},
+			}
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+				var daySign = $("#daySign").val();
+				if (daySign == 1) {
+					var normalHour = $("#normalHour").val();
+					var normalNumber = $("#normalNumber").val();
+					if ($.common.isEmpty(normalHour) || normalHour < 0 || $.common.isEmpty(normalNumber) || normalNumber < 0) {
+						$.modal.alertWarning("Please check whether the normal shift time and number of people are filled in correctly");
+						return;
+					}
+				}
+	            $.operate.save(prefix + "/add", $('#form-timeRecord-add').serialize());
+	        }
+	    }
+
+		/**
+		 * 计算正常总工时
+		 */
+		function sumNormalHouor() {
+			var normalHour = $("#normalHour").val();
+			var normalNumber = $("#normalNumber").val();
+			$("#sumNormal").val(normalHour * normalNumber);
+		}
+
+		/**
+		 * 计算加班总工时
+		 */
+		function sumOvertimeHouor() {
+			var overtimeHour = $("#overtimeHour").val();
+			var overtimeNumber = $("#overtimeNumber").val();
+			$("#sumOvertime").val(overtimeHour * overtimeNumber);
+		}
+
+	</script>
+</body>
+</html>

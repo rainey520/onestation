@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-timeRecord-edit" th:object="${timeRecord}">
+            <input id="id" name="id" th:field="*{id}"  type="hidden">
+			<input id="lineId" name="lineId" th:field="*{lineId}" type="hidden">
+			<input id="daySign" name="daySign" th:value="${daySign}" type="hidden">
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">正常工时数：</label>
+				<div class="col-sm-6">
+					<input id="normalHour" name="normalHour" th:field="*{normalHour}" class="form-control" type="text" onchange="sumNormalHouor()">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">正常用工人数：</label>
+				<div class="col-sm-6">
+					<input id="normalNumber" name="normalNumber" th:field="*{normalNumber}" class="form-control" type="text" onchange="sumNormalHouor()">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">加班工时数：</label>
+				<div class="col-sm-6">
+					<input id="overtimeHour" name="overtimeHour" th:field="*{overtimeHour}" class="form-control" type="text" onchange="sumOvertimeHouor()">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">加班用工人数：</label>
+				<div class="col-sm-6">
+					<input id="overtimeNumber" name="overtimeNumber" th:field="*{overtimeNumber}" class="form-control" type="text" onchange="sumOvertimeHouor()">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">加班倍率：</label>
+				<div class="col-sm-6">
+					<select id="overtimeRace" name="overtimeRace" th:field="*{overtimeRace}" class="form-control">
+						<option value="1.5">1.5</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">手动调整工时：</label>
+				<div class="col-sm-6">
+					<input id="changeHour" name="changeHour" th:field="*{changeHour}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">正常总工时：</label>
+				<div class="col-sm-6">
+					<input id="sumNormal" name="sumNormal" class="form-control" type="number" th:value="${timeRecord.normalHour * timeRecord.normalNumber}" readonly="readonly">
+				</div>
+			</div>
+			<div class="form-group col-sm-6">
+				<label class="col-sm-6 control-label">加班总工时：</label>
+				<div class="col-sm-6">
+					<input id="sumOvertime" name="sumNormal" class="form-control" type="number" th:value="${timeRecord.overtimeHour * timeRecord.overtimeNumber}" readonly="readonly">
+				</div>
+			</div>
+		</form>
+    </div>
+    <div th:include="include::footer"></div>
+    <script type="text/javascript">
+		var prefix = ctx + "production/timeRecord";
+		$("#form-timeRecord-edit").validate({
+			rules:{
+				xxxx:{
+					required:true,
+				},
+			}
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+				var daySign = $("#daySign").val();
+				if (daySign == 1) {
+					var normalHour = $("#normalHour").val();
+					var normalNumber = $("#normalNumber").val();
+					if ($.common.isEmpty(normalHour) || normalHour < 0 || $.common.isEmpty(normalNumber) || normalNumber < 0) {
+						$.modal.alertWarning("请检查正常班时间与人数是否填写正确");
+						return;
+					}
+				}
+	            $.operate.save(prefix + "/edit", $('#form-timeRecord-edit').serialize());
+	        }
+	    }
+
+		/**
+		 * 计算正常总工时
+		 */
+		function sumNormalHouor() {
+			var normalHour = $("#normalHour").val();
+			var normalNumber = $("#normalNumber").val();
+			$("#sumNormal").val(normalHour * normalNumber);
+		}
+
+		/**
+		 * 计算加班总工时
+		 */
+		function sumOvertimeHouor() {
+			var overtimeHour = $("#overtimeHour").val();
+			var overtimeNumber = $("#overtimeNumber").val();
+			$("#sumOvertime").val(overtimeHour * overtimeNumber);
+		}
+	</script>
+</body>
+</html>

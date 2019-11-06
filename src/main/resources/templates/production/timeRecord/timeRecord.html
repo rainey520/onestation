@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								公司id：<input type="text" name="companyId"/>
+							</li>
+
+							<li>
+								产线id：<input type="text" name="lineId"/>
+							</li>
+
+							<li>
+								正常工时数：<input type="text" name="normalHour"/>
+							</li>
+
+							<li>
+								正常用工人数：<input type="text" name="normalNumber"/>
+							</li>
+
+							<li>
+								加班小时数：<input type="text" name="overtimeHour"/>
+							</li>
+
+							<li>
+								加班的人数：<input type="text" name="overtimeNumber"/>
+							</li>
+
+							<li>
+								加班倍率(1.5、2、3)：<input type="text" name="overtimeRace"/>
+							</li>
+
+							<li>
+								手动调整工时：<input type="text" name="changeHour"/>
+							</li>
+
+							<li>
+								记录日期年月日：<input type="text" name="recordDate"/>
+							</li>
+
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+			
+	        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+				<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="production:timeRecord:add">
+					<i class="fa fa-plus"></i> 添加
+				</a>
+				<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()" shiro:hasPermission="production:timeRecord:edit">
+					<i class="fa fa-edit"></i> 修改
+				</a>
+				<a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()" shiro:hasPermission="production:timeRecord:remove">
+					<i class="fa fa-remove"></i> 删除
+				</a>
+				<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="production:timeRecord:export">
+						<i class="fa fa-download"></i> 导出
+				 </a>
+			</div>
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('production:timeRecord:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('production:timeRecord:remove')}]];
+        var prefix = ctx + "production/timeRecord";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+				exportUrl: prefix + "/export",
+                modalName: "公司考勤记录",
+				search: false,
+		        showExport: true,
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'id', 
+					title : '公司考勤记录主键id',
+					visible: false
+				},
+				{
+					field : 'companyId', 
+					title : '公司id',
+					sortable: true
+				},
+				{
+					field : 'lineId', 
+					title : '产线id',
+					sortable: true
+				},
+				{
+					field : 'normalHour', 
+					title : '正常工时数',
+					sortable: true
+				},
+				{
+					field : 'normalNumber', 
+					title : '正常用工人数',
+					sortable: true
+				},
+				{
+					field : 'overtimeHour', 
+					title : '加班小时数',
+					sortable: true
+				},
+				{
+					field : 'overtimeNumber', 
+					title : '加班的人数',
+					sortable: true
+				},
+				{
+					field : 'overtimeRace', 
+					title : '加班倍率(1.5、2、3)',
+					sortable: true
+				},
+				{
+					field : 'changeHour', 
+					title : '手动调整工时',
+					sortable: true
+				},
+				{
+					field : 'recordDate', 
+					title : '记录日期年月日',
+					sortable: true
+				},
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+		            	actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

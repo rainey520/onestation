@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            硬件编号：<input type="text" name="deviceId"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var prefix = ctx + "device/devList";
+
+    $(function() {
+        var options = {
+            url: prefix + "/list2",
+            modalName: "硬件",
+            // 页面优化
+            search: false,
+            showExport: false,
+            showSearch:true,
+            showRefresh:true,
+            showColumns:false,
+            showToggle:true,
+            sortName:'configDate',
+            sortOrder:'desc',
+            columns: [
+                {
+                    field : 'id',
+                    title : '',
+                    visible: false
+                },
+                {
+                    field : 'deviceId',
+                    title : '硬件编号',
+                    sortable: true,
+                    formatter:function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field : 'deviceName',
+                    title : '硬件名称',
+                    sortable: true
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>
