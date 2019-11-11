@@ -57,7 +57,7 @@ public class ReportController extends BaseController {
         String fileName = filePath.substring(filePath.lastIndexOf("/"));
         User user = JwtUtil.getUser();
         if (user != null) {
-            String savePath = RuoYiConfig.getProfile() + "watch" + user.getCompanyId() + "/" + fileName;
+            String savePath = RuoYiConfig.getProfile() + "station" + user.getCompanyId() + "/" + fileName;
             // 下载文件
             File file = new File(savePath);
             if (file.exists()) {

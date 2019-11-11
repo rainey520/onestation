@@ -32,7 +32,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!--查询全部计件统计列表-->
     <select id="selectCountPieceList" parameterType="CountPiece" resultMap="CountPieceResult">
-        select * ,sum(cp_number) as sumCpNumber,sum(cp_bad_number) as sumCpBadNumber,sum(total_price)  as sumTotalPrice from tab_count_piece
+        select cp_user_id ,max(cp_date) as cp_date,sum(cp_number) as sumCpNumber,sum(cp_bad_number) as sumCpBadNumber,sum(total_price)  as sumTotalPrice from tab_count_piece
         where company_id = #{companyId}
         <if test="cpUserId != null and cpUserId != -1">
             and cp_user_id = #{cpUserId}

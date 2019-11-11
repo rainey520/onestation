@@ -152,7 +152,7 @@ public class ProfileController extends BaseController {
         try {
             if (!file.isEmpty()) {
                 //判断SOP文件夹是否存在
-                String sopPath = RuoYiConfig.getProfile() + "watch" + currentUser.getCompanyId();
+                String sopPath = RuoYiConfig.getProfile() + "station" + currentUser.getCompanyId();
                 File f = new File(sopPath);
                 if (!f.exists()) {
                     //不存在创建对应文件夹
@@ -161,8 +161,8 @@ public class ProfileController extends BaseController {
                 String path = sopPath + "/";
                 String avatar = FileUploadUtils.upload(path, file);
                 currentUser.setLoginTag(UserConstants.LOGIN_TAG_ADD);
-                currentUser.setAvatar(imgUrl + "watch" + currentUser.getCompanyId() + "/" + avatar);
-                String imgurl = imgUrl + "watch" + currentUser.getCompanyId() + "/" + avatar;
+                currentUser.setAvatar(imgUrl + "station" + currentUser.getCompanyId() + "/" + avatar);
+                String imgurl = imgUrl + "station" + currentUser.getCompanyId() + "/" + avatar;
                 if (userService.updateUserInfo(currentUser, request) > 0) {
                     setSysUser(userService.selectUserById(currentUser.getUserId()));
                     return AjaxResult.success("success", imgurl);

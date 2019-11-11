@@ -1,7 +1,6 @@
 package com.ruoyi.project.app.service;
 
 import com.ruoyi.project.app.domain.LineData;
-import com.ruoyi.project.device.api.form.WorkDataForm;
 import com.ruoyi.project.production.productionLine.domain.ProductionLine;
 
 import java.util.List;
@@ -22,20 +21,6 @@ public interface ILineService {
      * @return 结果
      */
     List<ProductionLine> selectAllLineList();
-
-    /**
-     * 计数器硬件端拉取工单信息
-     * @param lineData  上传信息
-     * @return 结果
-     */
-    Map<String, Object> getWorkInfo(LineData lineData);
-
-    /**
-     * 计数器上传数据信息
-     * @param uploadInfo 上传信息
-     * @return 结果
-     */
-    Map<String, Object> uploadWorkInfo(WorkDataForm uploadInfo);
 
     /**
      * 计数器以硬件产线关联配置

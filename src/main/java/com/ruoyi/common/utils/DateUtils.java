@@ -96,6 +96,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         return DateFormatUtils.format(now, "yyyy/MM/dd");
     }
 
+
+    /**
+     * 获取日期 格式 yyyy-MM-dd HH:mm:ss
+     */
     public static final String getDateTime(Date date){
         if (date == null) {
             return "--";

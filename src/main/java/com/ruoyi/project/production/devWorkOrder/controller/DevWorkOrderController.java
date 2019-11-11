@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -292,7 +293,7 @@ public class DevWorkOrderController extends BaseController {
                 //达成率 = 累计产量/标准工时*(生产用时) *100
                 devWorkOrder.setReachRate(0.00F);
                 if (devWorkOrder.getCumulativeNumber() != 0) {
-                    float standardTotal = devWorkOrder.getProductStandardHour() * (TimeUtil.getDateDel(devWorkOrder.getSignTime()) + devWorkOrder.getSignHuor());
+                    float standardTotal = devWorkOrder.getProductStandardHour() * (TimeUtil.getDateDel(devWorkOrder.getSignTime(),new Date()) + devWorkOrder.getSignHuor());
                     devWorkOrder.setReachRate(standardTotal == 0 ? 0.0F : new BigDecimal(((float) devWorkOrder.getCumulativeNumber() / standardTotal) * 100).setScale(3, BigDecimal.ROUND_HALF_UP).floatValue());
                 }
             }

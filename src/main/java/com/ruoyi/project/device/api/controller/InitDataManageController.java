@@ -1,6 +1,7 @@
 package com.ruoyi.project.device.api.controller;
 
 import com.ruoyi.common.utils.DataTurn;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.Tools;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +90,7 @@ public class InitDataManageController extends BaseController {
             arr[6] = DataTurn.HexToInt(order.substring(64, 72));
             arr[7] = DataTurn.HexToInt(order.substring(72, 80));
             devDeviceCountsService.insertDevDeviceCounts(id, arr);
-       // return Tools.addCheck("553A0181"+id+"00");
+            // return Tools.addCheck("553A0181"+id+"00");
             return "ok";
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,6 +119,10 @@ public class InitDataManageController extends BaseController {
     @ResponseBody
     @RequestMapping("/workData")
     public Map<String, Object> workData(@RequestBody WorkDataForm data) {
+        System.out.println("*************************************************************************");
+        System.out.println(">>>>>>>>>>>>>>>> " + DateUtils.getDateTime(new Date()) + "  >> 进入到数据上报接口 >>>>>>>>>");
+        System.out.println("上传编码: " + data.getCode());
+        System.out.println("上传数量: " + data.getD1());
         return iInitDataManageService.workData(data);
     }
 
@@ -164,13 +170,13 @@ public class InitDataManageController extends BaseController {
      */
     @RequestMapping("/uploadNum")
     @ResponseBody
-    public Map<String,Object> uploadNum(String phone,Integer num,Integer lineId) {
+    public Map<String, Object> uploadNum(String phone, Integer num, Integer lineId) {
         System.out.println("========== 进入机器设备信息上传方法 ===============");
-        Map<String,Object> map = new HashMap<>(16);
+        Map<String, Object> map = new HashMap<>(16);
         System.out.println("phone=" + phone);
         System.out.println("num=" + num);
         System.out.println("lineId=" + lineId);
-        map.put("code",1);
+        map.put("code", 1);
         return map;
     }
 

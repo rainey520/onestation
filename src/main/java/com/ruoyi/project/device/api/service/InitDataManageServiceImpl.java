@@ -23,11 +23,13 @@ import com.ruoyi.project.production.productionLine.mapper.ProductionLineMapper;
 import com.ruoyi.project.production.singleWork.domain.SingleWork;
 import com.ruoyi.project.production.singleWork.mapper.SingleWorkMapper;
 import com.ruoyi.project.production.workstation.domain.Workstation;
-import com.ruoyi.project.production.workstation.mapper.WorkstationMapper;
 import com.ruoyi.project.system.user.domain.User;
 import com.ruoyi.project.system.user.mapper.UserMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -35,6 +37,9 @@ import java.util.Map;
 
 @Service
 public class InitDataManageServiceImpl implements IInitDataManageService {
+
+    /** logger */
+    private static final Logger LOGGER = LoggerFactory.getLogger(InitDataManageServiceImpl.class);
 
     @Autowired
     private DevListMapper devListMapper;
@@ -51,12 +56,8 @@ public class InitDataManageServiceImpl implements IInitDataManageService {
     @Autowired
     private DevWorkDataMapper devWorkDataMapper;
 
-
     @Autowired
     private DevDataLogMapper devDataLogMapper;
-
-    @Autowired
-    private WorkstationMapper workstationMapper;
 
     @Autowired
     private SingleWorkMapper singleWorkMapper;
@@ -118,7 +119,7 @@ public class InitDataManageServiceImpl implements IInitDataManageService {
             map.put("msg", "请求成功");
             map.put("data", workForm);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("拉取工单信息接口出现异常:" + e.getMessage());
             map.put("code", 2);
             map.put("msg", "系统异常");
             map.put("data", null);
@@ -133,6 +134,7 @@ public class InitDataManageServiceImpl implements IInitDataManageService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> workData(WorkDataForm data) {
         Map<String, Object> map = new HashMap<>(16);
         try {
@@ -292,7 +294,7 @@ public class InitDataManageServiceImpl implements IInitDataManageService {
 
             return map;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("计数器上传数据接口出现异常:" + e.getMessage());
             map.put("code", 2);
             map.put("msg", "系统异常");
             map.put("status", 0);

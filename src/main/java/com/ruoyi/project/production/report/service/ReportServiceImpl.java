@@ -132,7 +132,7 @@ public class ReportServiceImpl implements IReportService {
         User u = JwtUtil.getUser();
 
         // 文件根路径
-        String filePath = RuoYiConfig.getProfile() + "watch" + u.getCompanyId();
+        String filePath = RuoYiConfig.getProfile() + "station" + u.getCompanyId();
         File fileDir = new File(filePath);
         if (!fileDir.exists()) {
             //不存在创建对应文件夹
@@ -144,7 +144,7 @@ public class ReportServiceImpl implements IReportService {
             file.delete();
         }
         fos = new FileOutputStream(savePath);
-        appPath = fileUrl + "watch" + u.getCompanyId() + "/" + fileName.toString() + ".pdf";
+        appPath = fileUrl + "station" + u.getCompanyId() + "/" + fileName.toString() + ".pdf";
         writer = PdfWriter.getInstance(document, fos);
 
         document.open();

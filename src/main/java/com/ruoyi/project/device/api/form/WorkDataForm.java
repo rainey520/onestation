@@ -82,4 +82,19 @@ public class WorkDataForm {
     public void setD8(int d8) {
         this.d8 = d8;
     }
+
+    @Override
+    public String toString() {
+        return "WorkDataForm{" +
+                "code='" + code + '\'' +
+                ", d1=" + d1 +
+                ", d2=" + d2 +
+                ", d3=" + d3 +
+                ", d4=" + d4 +
+                ", d5=" + d5 +
+                ", d6=" + d6 +
+                ", d7=" + d7 +
+                ", d8=" + d8 +
+                '}';
+    }
 }

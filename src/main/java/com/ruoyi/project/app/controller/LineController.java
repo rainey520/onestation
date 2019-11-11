@@ -3,7 +3,6 @@ package com.ruoyi.project.app.controller;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.project.app.domain.LineData;
 import com.ruoyi.project.app.service.ILineService;
-import com.ruoyi.project.device.api.form.WorkDataForm;
 import com.ruoyi.project.production.singleWork.domain.SingleWork;
 import com.ruoyi.project.production.singleWork.service.ISingleWorkService;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ import java.util.Map;
 public class LineController {
 
     /**
-     * logger
+     * 日志记录
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(LineController.class);
 
@@ -45,7 +44,7 @@ public class LineController {
         try {
             return AjaxResult.success(lineService.selectAllLine());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("拉取流水线信息:" + e.getMessage());
             return AjaxResult.error();
         }
     }
@@ -70,22 +69,6 @@ public class LineController {
         } catch (Exception e) {
             return AjaxResult.error();
         }
-    }
-
-    /**
-     * 计数器硬件端拉取工单信息
-     */
-    @RequestMapping("/getWorkInfo")
-    public Map<String, Object> getWorkInfo(@RequestBody LineData lineData) {
-        return lineService.getWorkInfo(lineData);
-    }
-
-    /**
-     * 计数器上传计数信息
-     */
-    @RequestMapping("/uploadWorkInfo")
-    public Map<String, Object> uploadWorkInfo(@RequestBody WorkDataForm uploadInfo) {
-        return lineService.uploadWorkInfo(uploadInfo);
     }
 
     /**
@@ -116,7 +99,7 @@ public class LineController {
      * 用户扫码配置工位更新工位责任人
      */
     @RequestMapping("/userConfigJsCode")
-    public Map<String, Object> userConfigJsCode(@RequestBody LineData lineData){
+    public Map<String, Object> userConfigJsCode(@RequestBody LineData lineData) {
         return lineService.userConfigJsCode(lineData);
     }
 }

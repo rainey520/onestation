@@ -42,17 +42,16 @@ public class TimeUtil {
     }
 
     /**
-     * 获取时间与当前系统时间相差几个小时
-     *
-     * @param startDate 开始时间
-     * @return
+     * 计算两个时间的差值
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 结果
      */
-    public static float getDateDel(Date startDate) {
-        Date nowDate = new Date();
+    public static float getDateDel(Date startDate, Date endDate) {
         long nd = 1000 * 24 * 60 * 60;
         long nh = 1000 * 60 * 60;
         long nm = 1000 * 60;
-        long diff = nowDate.getTime() - startDate.getTime();
+        long diff = endDate.getTime() - startDate.getTime();
         long day = diff / nd;
         long hour = diff % nd / nh;
         long min = diff % nd % nh / nm;
@@ -81,24 +80,6 @@ public class TimeUtil {
         }
     }
 
-    /**
-     * 计算开始结束时间小时差值数
-     * @param startDate 开始日期
-     * @param endDate 结束日期
-     * @return 结果
-     */
-    public static float getDateDel(Date startDate, Date endDate) {
-        long nd = 1000 * 24 * 60 * 60;
-        long nh = 1000 * 60 * 60;
-        long nm = 1000 * 60;
-        long diff = endDate.getTime() - startDate.getTime();
-        long day = diff / nd;
-        long hour = diff % nd / nh;
-        long min = diff % nd % nh / nm;
-        float t = (float) day * 24;
-        float m = (float) min / 60;
-        return t + hour + m;
-    }
 
     /**
      * 获取上一个小时的最后一秒钟的时间 <br>
