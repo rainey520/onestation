@@ -6,6 +6,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.shiro.service.LoginService;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
+import com.ruoyi.framework.web.domain.HttpCode;
 import com.ruoyi.project.app.domain.Index;
 import com.ruoyi.project.app.domain.LineData;
 import com.ruoyi.project.app.service.IInitService;
@@ -23,6 +24,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/app")
 public class InitController extends BaseController {
+
     @Autowired
     private LoginService loginService;
 
@@ -33,7 +35,7 @@ public class InitController extends BaseController {
     public AjaxResult ajaxLogin(@RequestBody User user) {
         try {
             System.out.println(user);
-            return loginService.login(user.getLoginName(),user.getPassword(),user.getLangVersion());
+            return loginService.login(user.getLoginName(), user.getPassword(), user.getLangVersion());
         } catch (AuthenticationException e) {
             String msg = "用户或密码错误";
             if (StringUtils.isNotEmpty(e.getMessage())) {
@@ -47,27 +49,29 @@ public class InitController extends BaseController {
 
     /**
      * 获取当天工单、菜单权限、公司信息
+     *
      * @return
      */
     @PostMapping("/index")
-    public AjaxResult initIndex(@RequestBody Index index){
+    public AjaxResult initIndex(@RequestBody Index index) {
         try {
             return AjaxResult.success(iInitService.initIndex(index));
-        }catch (Exception e){
+        } catch (Exception e) {
             return error(e.getMessage());
         }
     }
 
     /**
      * 获取菜单
+     *
      * @param index
      * @return
      */
     @PostMapping("/menu")
-    public AjaxResult initMenu(@RequestBody Index index){
+    public AjaxResult initMenu(@RequestBody Index index) {
         try {
             return AjaxResult.success(iInitService.initMenu(index));
-        }catch (Exception e){
+        } catch (Exception e) {
             return error(e.getMessage());
         }
     }
@@ -76,7 +80,7 @@ public class InitController extends BaseController {
      * 获取工单号的接口
      */
     @RequestMapping("/getWorkCode")
-    public AjaxResult getWorkCode(){
+    public AjaxResult getWorkCode() {
         return AjaxResult.success(iInitService.getWorkCode());
     }
 
@@ -85,11 +89,11 @@ public class InitController extends BaseController {
      * 获取计数器硬件编码信息
      */
     @RequestMapping("/getDevJsCode")
-    public AjaxResult getDevJsCode(){
+    public AjaxResult getDevJsCode() {
         try {
-            return AjaxResult.success(iInitService.getDevJsCode());
+            return AjaxResult.api(HttpCode.SUCCESS, iInitService.getDevJsCode());
         } catch (BusinessException e) {
-            return AjaxResult.error(e.getMessage());
+            return AjaxResult.api(HttpCode.FAILED, e.getMessage());
         }
     }
 
@@ -97,7 +101,7 @@ public class InitController extends BaseController {
      * 计数器接口校验
      */
     @RequestMapping("/checkJsCode")
-    public Map<String,Object> checkJsCode(@RequestBody LineData lineData){
+    public Map<String, Object> checkJsCode(@RequestBody LineData lineData) {
         return iInitService.checkJsCode(lineData);
     }
 
@@ -108,22 +112,24 @@ public class InitController extends BaseController {
 
     /**
      * 计数器数据上传
+     *
      * @param dataForm 上传信息
      * @return 结果
      */
     @RequestMapping("/uploadNum")
-    public Map<String,Object> uploadNum(@RequestBody WorkDataForm dataForm){
+    public Map<String, Object> uploadNum(@RequestBody WorkDataForm dataForm) {
         return iInitService.uploadNum(dataForm);
     }
 
 
     /**
      * 计数器数据获取
+     *
      * @param lineData 上传信息
      * @return 结果
      */
     @RequestMapping("/getNum")
-    public Map<String,Object> getNum(@RequestBody WorkDataForm lineData){
+    public Map<String, Object> getNum(@RequestBody WorkDataForm lineData) {
         return iInitService.getNum(lineData);
     }
 }
