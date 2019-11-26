@@ -3,6 +3,7 @@ package com.ruoyi.project.app.service;
 import com.ruoyi.project.app.domain.Index;
 import com.ruoyi.project.app.domain.Init;
 import com.ruoyi.project.app.domain.LineData;
+import com.ruoyi.project.device.api.form.WorkDataForm;
 import com.ruoyi.project.system.menu.domain.Menu;
 
 import java.util.List;
@@ -40,4 +41,18 @@ public interface IInitService {
      * @return 结果
      */
     Map<String, Object> checkJsCode(LineData lineData);
+
+    /**
+     * 计数器数据上传
+     * @param lineData 上传信息
+     * @return 结果
+     */
+    Map<String, Object> uploadNum(WorkDataForm lineData);
+
+    /**
+     * 计数器数据获取
+     * @param lineData 上传信息
+     * @return 结果
+     */
+    Map<String, Object> getNum(WorkDataForm lineData);
 }

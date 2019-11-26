@@ -9,6 +9,7 @@ import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.project.app.domain.Index;
 import com.ruoyi.project.app.domain.LineData;
 import com.ruoyi.project.app.service.IInitService;
+import com.ruoyi.project.device.api.form.WorkDataForm;
 import com.ruoyi.project.system.user.domain.User;
 import org.apache.shiro.authc.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,5 +99,31 @@ public class InitController extends BaseController {
     @RequestMapping("/checkJsCode")
     public Map<String,Object> checkJsCode(@RequestBody LineData lineData){
         return iInitService.checkJsCode(lineData);
+    }
+
+
+    /******************************************************************************************************
+     *********************************** 计数器接口上传测试 ************************************************
+     ******************************************************************************************************/
+
+    /**
+     * 计数器数据上传
+     * @param dataForm 上传信息
+     * @return 结果
+     */
+    @RequestMapping("/uploadNum")
+    public Map<String,Object> uploadNum(@RequestBody WorkDataForm dataForm){
+        return iInitService.uploadNum(dataForm);
+    }
+
+
+    /**
+     * 计数器数据获取
+     * @param lineData 上传信息
+     * @return 结果
+     */
+    @RequestMapping("/getNum")
+    public Map<String,Object> getNum(@RequestBody WorkDataForm lineData){
+        return iInitService.getNum(lineData);
     }
 }

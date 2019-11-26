@@ -112,6 +112,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
+    <update id="updateDevListNotNull" parameterType="DevList">
+        update dev_list
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="lineId != null  ">line_id = #{lineId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
     <update id="updateDevSign" parameterType="DevList">
         update dev_list set sign = #{sign},dev_type=#{devType},device_name = #{deviceName} where id = #{id}
     </update>
@@ -175,6 +183,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createDate"    column="create_date"    />
         <result property="sign"    column="sign"    />
         <result property="devType"    column="dev_type"    />
+        <result property="lineId"    column="line_id"    />
     </resultMap>
     <select id="selectDevListByCode" resultMap="DevListResult1">
         SELECT * FROM dev_list where device_id = #{code} limit 1;

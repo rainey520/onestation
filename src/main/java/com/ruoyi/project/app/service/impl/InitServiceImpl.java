@@ -10,6 +10,7 @@ import com.ruoyi.project.app.domain.Index;
 import com.ruoyi.project.app.domain.Init;
 import com.ruoyi.project.app.domain.LineData;
 import com.ruoyi.project.app.service.IInitService;
+import com.ruoyi.project.device.api.form.WorkDataForm;
 import com.ruoyi.project.device.devCompany.mapper.DevCompanyMapper;
 import com.ruoyi.project.device.devList.domain.DevList;
 import com.ruoyi.project.device.devList.mapper.DevListMapper;
@@ -166,6 +167,60 @@ public class InitServiceImpl implements IInitService {
         }
         map.put("code", 0);
         map.put("msg", "请求失败");
+        return map;
+    }
+
+
+    /**
+     * 计数器数据上传
+     *
+     * @param lineData 上传信息
+     * @return 结果
+     */
+    @Override
+    public Map<String, Object> uploadNum(WorkDataForm lineData) {
+        Map<String, Object> map = new HashMap<>(16);
+        if (lineData == null || StringUtils.isEmpty(lineData.getCode())) {
+            map.put("code", 0);
+            map.put("msg", "请求参数不正确");
+            return map;
+        }
+        DevList devList = devListMapper.selectDevListByCode(lineData.getCode());
+        if (devList == null) {
+            map.put("code", 0);
+            map.put("msg", "硬件不存在或被删除");
+            return map;
+        }
+        devList.setLineId(lineData.getD1());
+        devListMapper.updateDevList(devList);
+        map.put("code", 1);
+        map.put("msg", "上报成功");
+        return map;
+    }
+
+    /**
+     * 计数器数据获取
+     *
+     * @param lineData 上传信息
+     * @return 结果
+     */
+    @Override
+    public Map<String, Object> getNum(WorkDataForm lineData) {
+        Map<String, Object> map = new HashMap<>(16);
+        if (lineData == null || StringUtils.isEmpty(lineData.getCode())) {
+            map.put("code", 0);
+            map.put("msg", "请求参数不正确");
+            return map;
+        }
+        DevList devList = devListMapper.selectDevListByCode(lineData.getCode());
+        if (devList == null) {
+            map.put("code", 0);
+            map.put("msg", "硬件不存在或被删除");
+            return map;
+        }
+        map.put("code", 1);
+        map.put("msg", "请求成功");
+        map.put("data", devList.getLineId() != null ? devList.getLineId() : 0);
         return map;
     }
 }

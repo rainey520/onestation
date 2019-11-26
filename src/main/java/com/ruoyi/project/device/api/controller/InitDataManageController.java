@@ -1,7 +1,6 @@
 package com.ruoyi.project.device.api.controller;
 
 import com.ruoyi.common.utils.DataTurn;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.Tools;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,10 +117,6 @@ public class InitDataManageController extends BaseController {
     @ResponseBody
     @RequestMapping("/workData")
     public Map<String, Object> workData(@RequestBody WorkDataForm data) {
-        System.out.println("*************************************************************************");
-        System.out.println(">>>>>>>>>>>>>>>> " + DateUtils.getDateTime(new Date()) + "  >> 进入到数据上报接口 >>>>>>>>>");
-        System.out.println("上传编码: " + data.getCode());
-        System.out.println("上传数量: " + data.getD1());
         return iInitDataManageService.workData(data);
     }
 

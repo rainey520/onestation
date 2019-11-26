@@ -53,6 +53,14 @@ public interface DevListMapper {
     public int updateDevList(DevList devList);
 
     /**
+     * 修改硬件字段不能为空
+     *
+     * @param devList 硬件信息
+     * @return 结果
+     */
+    public int updateDevListNotNull(DevList devList);
+
+    /**
      * 修改硬件配置标记
      *
      * @param devList
