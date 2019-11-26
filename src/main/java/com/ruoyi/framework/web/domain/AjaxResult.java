@@ -119,16 +119,29 @@ public class AjaxResult extends HashMap<String, Object>
     }
 
     /**
-     * 用于API 接口交付
+     * 用于APP 接口交互
      * @param code 状态码
      * @param msg 提示信息
      * @param data 相关数据
-     * @return
+     * @return 结果
      */
     public static AjaxResult api(int code,String msg,Object data){
         AjaxResult result = new AjaxResult();
         result.put("code",code);
         result.put("msg",msg);
+        result.put("data",data);
+        return result;
+    }
+    /**
+     * 用于APP 接口交互
+     * @param httpCode 封装的响应码信息
+     * @param data 相关数据
+     * @return 结果
+     */
+    public static AjaxResult api(HttpCode httpCode,Object data){
+        AjaxResult result = new AjaxResult();
+        result.put("code",httpCode.getCode());
+        result.put("msg",httpCode.getMessage());
         result.put("data",data);
         return result;
     }
