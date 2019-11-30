@@ -115,9 +115,10 @@ public class WorkConstants {
     public final static String WORKHOUSE_NAME_UNIQUE = "0";
     public final static String WORKHOUSE_NAME_NOT_UNIQUE = "1";
 
-    /** 用于标记是 0、产线  1、车间 */
+    /** 用于标记是 0、产线  1、车间  2 小组工单*/
     public final static int SING_LINE =0;
     public final static int SING_SINGLE =1;
+    public final static int SING_GROUP =2;
 
     /**
      * 流水线名称是否唯一的返回结果

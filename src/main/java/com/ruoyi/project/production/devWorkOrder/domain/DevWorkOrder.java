@@ -200,7 +200,7 @@ public class DevWorkOrder extends BaseEntity {
 
     /** 标记工单是否作废 */
     private Integer abolish;
-    /** 工位是在车间还是在单工位生产标记(0、流水线默认值，1、单工位) */
+    /** 工位是在车间还是在单工位生产标记(0、流水线默认值，1、单工位、2 小组工单) */
     private Integer wlSign;
     /** 工单生产类型(0、默认值生产的是成品，1、生产半成品) */
     private Integer makeType;
