@@ -2,6 +2,9 @@ package com.ruoyi.project.app.controller;
 
 import com.ruoyi.common.exception.BusinessException;
 import com.ruoyi.common.exception.base.BaseException;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.IpUtils;
+import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.shiro.service.LoginService;
 import com.ruoyi.framework.web.controller.BaseController;
@@ -13,6 +16,8 @@ import com.ruoyi.project.app.service.IInitService;
 import com.ruoyi.project.device.api.form.WorkDataForm;
 import com.ruoyi.project.system.user.domain.User;
 import org.apache.shiro.authc.AuthenticationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +30,9 @@ import java.util.Map;
 @RequestMapping("/app")
 public class InitController extends BaseController {
 
+    /** logger */
+    private static final Logger LOGGER = LoggerFactory.getLogger(InitController.class);
+
     @Autowired
     private LoginService loginService;
 
@@ -34,7 +42,7 @@ public class InitController extends BaseController {
     @PostMapping("/login")
     public AjaxResult ajaxLogin(@RequestBody User user) {
         try {
-            System.out.println(user);
+            LOGGER.info("========== APP端登录用户：" + user.getLoginName() + "  登录时间：" + DateUtils.getDate() + "  登录IP地址：" + IpUtils.getIpAddr(ServletUtils.getRequest())+" ==========");
             return loginService.login(user.getLoginName(), user.getPassword(), user.getLangVersion());
         } catch (AuthenticationException e) {
             String msg = "用户或密码错误";

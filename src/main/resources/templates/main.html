@@ -36,7 +36,7 @@
                             </thead>
                             <tbody th:with="allWorkerToday = ${@workOrder.selectWorkOrderAllToday(1)}">
                             <!--循环列表-->
-                            <tr th:each="worker : ${allWorkerToday}">
+                            <tr th:each="worker : ${allWorkerToday}" th:if="${workerStatus.count le 12}">
                                 <td th:text="${worker.param1}"></td>
                                 <td th:text="${worker.workorderNumber}"></td>
                                 <td th:text="${worker.productCode}"></td>
@@ -73,7 +73,7 @@
                             </thead>
                             <tbody th:with="allWorkerToday = ${@workOrder.selectWorkOrderAllToday(2)}">
                             <!--循环列表-->
-                            <tr th:each="worker : ${allWorkerToday}">
+                            <tr th:each="worker,workerStatus: ${allWorkerToday}" th:if="${workerStatus.count le 12}">
                                 <td th:text="${worker.workorderNumber}"></td>
                                 <td th:text="${worker.productCode}"></td>
                                 <td th:text="${worker.productName}"></td>

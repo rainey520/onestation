@@ -6,7 +6,6 @@ import com.ruoyi.project.system.user.domain.UserQrCode;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户表 数据层
@@ -22,15 +21,6 @@ public interface UserMapper
      * @return 用户信息集合信息
      */
     public List<User> selectUserList(User user);
-
-    /**
-     * 根据条件分页查询用户对象
-     * 通过公司ID
-     *
-     * @param map 用户和公司所属公司id
-     * @return 用户信息集合信息
-     */
-    public List<User> selectUserListByCompanyId(Map map);
 
     /**
      * 通过用户名查询用户
