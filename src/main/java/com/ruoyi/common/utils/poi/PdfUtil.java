@@ -1,9 +1,9 @@
 package com.ruoyi.common.utils.poi;
 
 import com.itextpdf.text.BaseColor;
+import com.ruoyi.common.utils.StringUtils;
 import net.sf.jasperreports.engine.*;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.ClassUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -88,5 +88,14 @@ public class PdfUtil {
      */
     public static int IntegerNull(Integer val){
         return val == null?0:val;
+    }
+
+    /**
+     * 报表导出判断字符串是否为空
+     * @param str 字符串信息
+     * @return 结果
+     */
+    public static String nullStrVal(String str){
+        return StringUtils.isNotEmpty(str)?str:"--";
     }
 }

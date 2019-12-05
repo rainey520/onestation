@@ -1,10 +1,10 @@
 package com.ruoyi.project.system.role.mapper;
 
-import java.util.List;
-import java.util.Map;
-
 import com.ruoyi.project.system.role.domain.Role;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 角色表 数据层
@@ -115,4 +115,11 @@ public interface RoleMapper {
      * @return
      */
     List<Role> selectRolesByCompany(@Param("companyId")Integer companyId);
+
+    /**
+     * 通过公司id角色id查询角色基本信息
+     * @param roleId 角色id
+     * @return 结果
+     */
+    Role selectRoleInfoById(@Param("roleId") Integer roleId);
 }

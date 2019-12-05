@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-groupWork-edit" th:object="${groupWork}">
+            <input id="id" name="id" th:field="*{id}"  type="hidden">
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">公司id：</label>
+				<div class="col-sm-8">
+					<input id="companyId" name="companyId" th:field="*{companyId}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">分配所在小组id：</label>
+				<div class="col-sm-8">
+					<input id="groupId" name="groupId" th:field="*{groupId}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">工单id：</label>
+				<div class="col-sm-8">
+					<input id="workId" name="workId" th:field="*{workId}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">工单号：</label>
+				<div class="col-sm-8">
+					<input id="workCode" name="workCode" th:field="*{workCode}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">产品信息：</label>
+				<div class="col-sm-8">
+					<input id="pnCode" name="pnCode" th:field="*{pnCode}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">分配在该小组的工单数量：</label>
+				<div class="col-sm-8">
+					<input id="workNum" name="workNum" th:field="*{workNum}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">该小组该工单实际做的数量：</label>
+				<div class="col-sm-8">
+					<input id="actualNum" name="actualNum" th:field="*{actualNum}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">分配时间：</label>
+				<div class="col-sm-8">
+					<input id="cTime" name="cTime" th:field="*{cTime}" class="form-control" type="text">
+				</div>
+			</div>
+		</form>
+    </div>
+    <div th:include="include::footer"></div>
+    <script type="text/javascript">
+		var prefix = ctx + "group/groupWork";
+		$("#form-groupWork-edit").validate({
+			rules:{
+				xxxx:{
+					required:true,
+				},
+			}
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+	            $.operate.save(prefix + "/edit", $('#form-groupWork-edit').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<form class="form-horizontal m" id="form-groupInfo-add" th:object="${groupInfo}">
+		<input id="id" name="id" th:field="*{id}"  type="hidden">
+		<div class="form-group">
+			<label class="col-sm-3 control-label">小组名称：</label>
+			<div class="col-sm-8">
+				<input id="groupName" name="groupName" class="form-control" type="text" th:field="*{groupName}" >
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">小组成员：</label>
+			<div class="col-sm-8">
+				<select style="width: 100%" id="userIds" multiple="multiple" class="form-control">
+					<option th:if="${not #lists.isEmpty(configUser) && configUser.size() > 0}" th:each="item1:${configUser}"
+							selected  th:text="${item1.userName}" th:value="${item1.userId}"></option>
+					<option th:if="${not #lists.isEmpty(otherUser) && otherUser.size() > 0}" th:each="item2:${otherUser}"
+							 th:text="${item2.userName}" th:value="${item2.userId}"></option>
+				</select>
+			</div>
+		</div>
+	</form>
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+	var prefix = ctx + "group/groupInfo"
+	$("#form-groupInfo-add").validate({
+		rules:{
+			groupName:{
+				required:true,
+				remote: {
+					url: prefix + "/checkGroupNameUnique",
+					type: "post",
+					dataType: "json",
+					data: {
+						"groupName" : function() {
+							return $.common.trim($("#groupName").val());
+						},
+						"id" : function () {
+							return $.common.trim($("#id").val());
+						}
+					},
+					dataFilter: function(data, type) {
+						return $.validate.unique(data);
+					}
+				}
+			},
+		},
+		messages: {
+			"groupName": {
+				remote: "小组名称已经存在"
+			}
+		}
+
+	});
+
+	function submitHandler() {
+		if ($.validate.form()) {
+			var userIds = $("#userIds").val();
+			if ($.common.isEmpty(userIds)) {
+				$.modal.alertWarning("请选择小组成员");
+				return;
+			}
+			var data = {
+				id:$("#id").val(),
+				groupName:$("#groupName").val(),
+				userIds:userIds
+			}
+			var config = {
+				url: prefix + "/edit",
+				type: "post",
+				dataType: "json",
+				contentType: 'application/json',
+				data:JSON.stringify(data),
+				beforeSend: function () {
+					$.modal.loading("正在处理中，请稍后...");
+					$.modal.disable();
+				},
+				success: function (result) {
+					$.operate.successCallback(result);
+				}
+			};
+			$.ajax(config)
+		}
+	}
+</script>
+</body>
+</html>

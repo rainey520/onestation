@@ -143,4 +143,10 @@ public class WorkConstants {
     public final static Integer ECN_STATUS_NO = 0;
     public final static Integer ECN_STATUS_YES = 1;
 
+    /**
+     * 小组工单操作权限常量  操作权限  0、没有权限，1、有权限
+     */
+    public final static String GROUP_WORK_OP_NO = "0";
+    public final static String GROUP_WORK_OP_YES = "1";
+
 }

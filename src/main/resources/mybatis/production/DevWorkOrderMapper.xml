@@ -66,19 +66,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectDevWorkOrderList" parameterType="DevWorkOrder" resultMap="DevWorkOrderResult">
         <include refid="selectDevWorkOrderVo"/>
         <where>
-            1=1
             <if test="id != null "> and id = #{id}</if>
-            <if test="workorderName != null  and workorderName != '' "> and workorder_name = #{workorderName}</if>
             <if test="workorderNumber != null  and workorderNumber != '' ">
                 and workorder_number like concat('%', #{workorderNumber}, '%')
             </if>
             <if test="companyId != null "> and company_id = #{companyId}</if>
-            <if test="lineId != null and lineId > 0 "> and line_id = #{lineId} and wl_sign = 0</if>
-            <if test="single != null and single > 0 "> and line_id = #{single} and wl_sign = 1</if>
+            <if test="lineId != null and lineId > 0 "> and line_id = #{lineId}</if>
             <if test="productName != null  and productName != '' "> and product_name = #{productName}</if>
             <if test="productCode != null  and productCode != '' "> and product_code = #{productCode}</if>
-            <if test="orderCode != null and orderCode != '' "> and order_code like concat(#{orderCode}, '%')</if>
-            <if test="ecnStatus != null and ecnStatus >= 0"> and ecn_status = #{ecnStatus}</if>
             <if test="productStandardHour != null "> and product_standard_hour = #{productStandardHour}</if>
             <if test="createTime != null "> and create_time = #{createTime}</if>
             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
@@ -86,10 +81,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="deviceLiable != null "> and device_liable = #{deviceLiable}</if>
             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
             <if test="peopleNumber != null "> and people_number = #{peopleNumber}</if>
-            <if test="workingHour != null "> and working_hour = #{workingHour}</if>
-            <if test="overtimeHour != null "> and overtime_hour = #{overtimeHour}</if>
-            <if test="overtimeRace != null "> and overtime_race = #{overtimeRace}</if>
-            <if test="manualTime != null "> and manual_time = #{manualTime}</if>
             <if test="workorderStatus != null and workorderStatus > -1"> and workorder_status = #{workorderStatus}</if>
             <if test="operationStatus != null "> and operation_status = #{operationStatus}</if>
             <if test="initDate != null "> and init_date = #{initDate}</if>
@@ -97,7 +88,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="scrapNum != null "> and scrap_num = #{scrapNum}</if>
             <if test="wlSign != null "> and wl_sign = #{wlSign}</if>
             <if test="actualWarehouseNum != null "> and actual_warehouse_num = #{actualWarehouseNum}</if>
-            <if test="abolish != null and abolish > -1"> and abolish = #{abolish}</if>
             <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
                 AND date_format(production_start,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
             </if>
@@ -113,10 +103,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
 
+
+    <resultMap type="DevWorkOrder" id="DevWorkOrderInfoResult">
+        <result property="id"    column="id"    />
+        <result property="workorderNumber"    column="workorder_number"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="lineId"    column="line_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productNumber"    column="product_number"    />
+        <result property="productionStart"    column="production_start"    />
+        <result property="productionEnd"    column="production_end"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="productStandardHour"    column="product_standard_hour"    />
+        <result property="peopleNumber"    column="people_number"    />
+        <result property="workorderStatus"    column="workorder_status"    />
+        <result property="operationStatus"    column="operation_status"    />
+        <result property="workSign"    column="work_sign"    />
+        <result property="actualWarehouseNum"    column="actual_warehouse_num"    />
+        <result property="cumulativeNumber"    column="cumulative_number"    />
+        <result property="sign"    column="sign"    />
+        <result property="putIntoNumber"    column="put_into_number"    />
+        <result property="signTime"    column="sign_time"    />
+        <result property="signHuor"    column="sign_huor"    />
+        <result property="abolish"    column="abolish"    />
+        <result property="wlSign"    column="wl_sign"    />
+    </resultMap>
     <!--通过工单id查询工单的基本信息-->
-    <select id="selectWorkOrderInfoById" parameterType="Integer" resultType="com.ruoyi.project.production.devWorkOrder.domain.DevWorkOrder">
-        SELECT workorder_number as workorderNumber FROM dev_work_order where id = #{workId} and company_id = #{companyId}
+    <select id="selectWorkOrderInfoById" parameterType="Integer" resultMap="DevWorkOrderInfoResult">
+        SELECT * FROM dev_work_order where id = #{workId}
     </select>
+
+
 
     <insert id="insertDevWorkOrder" parameterType="DevWorkOrder" useGeneratedKeys="true" keyProperty="id">
         insert into dev_work_order
@@ -306,10 +325,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
       and production_start BETWEEN DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59');
     </select>
 
-    <!--查询当天所有的排班计划-->
-    <select id="selectWorkOrderAllToday" parameterType="Integer" resultMap="DevWorkOrderResult">
+    <!--查询对应工单所在位置的当天工单信息-->
+    <select id="selectWorkOrderAllToday"  resultMap="DevWorkOrderInfoResult">
         <include refid="selectDevWorkOrderVo"/>
-        where company_id= #{companyId} and production_start BETWEEN DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59');
+        where company_id= #{companyId} and wl_sign = #{wlSign} and production_start BETWEEN DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59');
     </select>
 
 

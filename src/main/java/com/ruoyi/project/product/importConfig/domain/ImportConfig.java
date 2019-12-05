@@ -47,6 +47,17 @@ public class ImportConfig extends BaseEntity
 
 	private String secretKey;
 
+	/** 工单MES配置规则 */
+	private String conRule;
+
+	public String getConRule() {
+		return conRule;
+	}
+
+	public void setConRule(String conRule) {
+		this.conRule = conRule;
+	}
+
 	public Integer getId() {
 		return id;
 	}

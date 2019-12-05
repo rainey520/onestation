@@ -30,5 +30,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			(#{item.userId},#{item.roleId})
 		</foreach>
 	</insert>
+
+	<!--通过用户id角色id查询工单操作权限信息-->
+	<select id="selectUserRoleInfo" resultMap="UserRoleResult">
+		SELECT * FROM sys_user_role where user_id = #{userId} and role_id = #{roleId} limit 1
+	</select>
 	
 </mapper> 

@@ -1,34 +1,33 @@
 package com.ruoyi.project.system.role.service;
 
-import java.util.*;
-
-import com.ruoyi.common.utils.ServletUtils;
-import com.ruoyi.framework.jwt.JwtUtil;
-import com.ruoyi.project.system.user.domain.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.exception.BusinessException;
 import com.ruoyi.common.support.Convert;
+import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.security.ShiroUtils;
 import com.ruoyi.framework.aspectj.lang.annotation.DataScope;
+import com.ruoyi.framework.jwt.JwtUtil;
 import com.ruoyi.project.system.role.domain.Role;
 import com.ruoyi.project.system.role.domain.RoleDept;
 import com.ruoyi.project.system.role.domain.RoleMenu;
 import com.ruoyi.project.system.role.mapper.RoleDeptMapper;
 import com.ruoyi.project.system.role.mapper.RoleMapper;
 import com.ruoyi.project.system.role.mapper.RoleMenuMapper;
+import com.ruoyi.project.system.user.domain.User;
 import com.ruoyi.project.system.user.mapper.UserRoleMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /**
  * 角色 业务层处理
  *
  * @author ruoyi
  */
-@Service
+@Service("role")
 public class RoleServiceImpl implements IRoleService {
     @Autowired
     private RoleMapper roleMapper;
@@ -356,5 +355,17 @@ public class RoleServiceImpl implements IRoleService {
     public List<Role> selectSysRoles() {
         User user = JwtUtil.getTokenUser(ServletUtils.getRequest());
         return roleMapper.selectSysRoles(user.getCompanyId());
+    }
+
+    /**
+     * 查询公司的角色信息
+     * @return 结果
+     */
+    public List<Role> selectRoleCompany(){
+        User user = JwtUtil.getUser();
+        if (user == null) {
+           return Collections.emptyList();
+        }
+        return roleMapper.selectRolesByCompany(user.getCompanyId());
     }
 }

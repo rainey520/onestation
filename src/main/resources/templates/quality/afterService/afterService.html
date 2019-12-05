@@ -6,17 +6,79 @@
 <body class="gray-bg">
 
 <div class="container-div">
-    <div class="row">
+    <div class="row col-sm-6">
+        <div class="col-sm-12 search-collapse">
+            <div class="select-list">
+                <ul>
+                    <li shiro:hasPermission="quality:afterService:add">
+                        <input type="text" id="scanInfo" name="scanInfo">
+                        <span style="color: red;font-weight: bold">备注：回车自动录入</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <span style="font-size: 14px;color: #002a80" id="scanItem"></span>
+                    <span style="font-size: 14px;margin-left: 10px">工单基本信息</span>
+                </div>
+                <div class="panel-body">
+                    <table style="width: 98%;">
+                        <tbody>
+                        <tr>
+                            <td><label>工单号:<span id="work-code">--</span></label></td>
+                            <td><label>产品编码:<span id="work-pn-code">--</span></label></td>
+                        </tr>
+                        <tr>
+                            <td><label>产品名称:<span id="work-pn-name">--</span></label></td>
+                            <td><label>生产时间:<span id="work-time">--</span></label></td>
+                        </tr>
+                        <tr>
+                            <td><label>工单数量:<span id="work-num">--</span></label></td>
+                            <td><label>实际产量:<span id="work-act">--</span></label></td>
+                        </tr>
+                        <tr>
+                            <td><label>退货比:<span id="work-back-info">--</span></label></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <span style="font-size: 16px">生产该工单小组信息</span><span style="color: #4821ff;margin-left: 5px">备注:橙色背景代表生产该扫码产品的小组信息</span>
+                </div>
+                <div class="panel-body">
+                    <table style="width: 98%;" cellspacing="5">
+                        <thead>
+                        <tr>
+                            <th style="width: 25%">小组名称</th>
+                            <th style="width: 25%">分配数量</th>
+                            <th style="width: 25%">完成数量</th>
+                            <th style="width: 25%">小组员工</th>
+                        </tr>
+                        </thead>
+                        <tbody id="work-group">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="row col-sm-6" style="margin-left: 5px">
         <div class="col-sm-12 search-collapse">
             <form id="formId">
                 <div class="select-list">
                     <ul>
                         <li>
-                            <input type="text" id="item"/>
-                            <a class="btn btn-success btn-sm" onclick="addSearchItem()">新增为搜索条件<i
-                                    class="fa fa-arrow-circle-right"></i></a>
-                            <input type="text" id="searchItems" name="searchItems" readonly="readonly"/>
-                            <input type="hidden" id="inputBatchInfo" name="inputBatchInfo" readonly="readonly"/>
+                            <input type="text" id="searchPnMain"/>
+                            <a class="btn btn-success btn-sm" onclick="searchPnMain()"><i
+                                    class="fa fa-search"></i>查询建档信息</a>
+                            <!--<input type="text" id="searchItems" name="searchItems" readonly="readonly"/>-->
+                            <!--<input type="hidden" id="inputBatchInfo" name="inputBatchInfo" readonly="readonly"/>-->
                         </li>
                         <li class="select-time">
                             <label>录入时间： </label>
@@ -37,22 +99,6 @@
             </form>
         </div>
 
-        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
-            <a class="btn btn-success" id="addServiceInfo" onclick="add()" shiro:hasPermission="quality:afterService:add">
-                <i class="fa fa-plus"></i> 添加
-            </a>
-            <!--<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()" shiro:hasPermission="quality:afterService:edit">-->
-            <!--<i class="fa fa-edit"></i> 修改-->
-            <!--</a>-->
-            <a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()"
-               shiro:hasPermission="quality:afterService:remove">
-                <i class="fa fa-remove"></i> 删除
-            </a>
-            <a class="btn btn-warning" onclick="$.table.exportExcel()"
-               shiro:hasPermission="quality:afterService:export">
-                <i class="fa fa-download"></i> 导出
-            </a>
-        </div>
         <div class="col-sm-12 search-collapse" id="tableSearch" style="display: none">
             <table class="table table-striped table-bordered table-hover" style="margin-top: 5px">
                 <thead>
@@ -75,14 +121,122 @@
 <div th:include="include :: footer"></div>
 <script th:src="@{/ajax/libs/jquery-layout/jquery.layout-latest.js}"></script>
 <script th:inline="javascript">
-    var editFlag = [[${@permission.hasPermi('quality:afterService:edit')}]];
-    var removeFlag = [[${@permission.hasPermi('quality:afterService:remove')}]];
+
+    var removeFlag = [[${@permission.hasPermi('quality:afterService:add')}]];
     var prefix = ctx + "quality/afterService";
 
     $(function () {
         initTableData();
     });
 
+    /**
+     * 监测回车事件提交数据提交数据
+     */
+    $('#scanInfo').keyup(function (e) {
+        if (e.keyCode == 13) {
+            if ($.validate.form()) {
+                var scanInfo = $.common.trim($("#scanInfo").val());
+                var data = {
+                    inputBatchInfo: scanInfo,
+                }
+                addSave(prefix + "/add", data, scanInfo);
+            }
+        }
+    });
+
+    /**
+     * 查询建档信息
+     */
+    function searchPnMain() {
+        var pnMain = $.common.trim($("#searchPnMain").val());
+        if ($.common.isEmpty(searchPnMain)) {
+            $.modal.alertWarning("请输入建档信息");
+            return;
+        }
+        $.post(prefix + "/searchPnMain", {pnMain: pnMain}, function (res) {
+            if (res.code == web_status.SUCCESS) {
+                if (res.data) {
+                    refreshScanData(res.data,pnMain);
+                }
+            } else {
+                $.modal.alertError(res.msg);
+            }
+        })
+    }
+
+    /**
+     * 扫码确认录入
+     */
+    function addSave(url, data, scanInfo) {
+        var config = {
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: data,
+            beforeSend: function () {
+                $.modal.loading("正在处理中，请稍后...");
+                $.modal.disable();
+            },
+            success: function (result) {
+                if (result.code == web_status.SUCCESS) {
+                    $("#scanInfo").val('');
+                    // 刷新数据
+                    if (result.data) {
+                        refreshScanData(result.data,scanInfo);
+                    }
+                } else {
+                    $.modal.alertError(result.msg);
+                }
+                $.modal.closeLoading();
+                $.modal.enable();
+            }
+        };
+        $.ajax(config)
+    }
+
+    /**
+     * 刷新扫码数据
+     */
+    function refreshScanData(data,scanInfo) {
+        $.table.refresh();
+        $("#work-group").children().remove();
+        // 更新工单基本信息
+        $("#scanItem").text(scanInfo);
+        $("#work-code").text(data.workCode);
+        $("#work-pn-code").text(data.pnCode);
+        $("#work-pn-name").text(data.pnName);
+        $("#work-time").text(data.workTime);
+        $("#work-num").text(data.workNum);
+        $("#work-act").text(data.actNum);
+        $("#work-back-info").text(data.backPercent + "%");
+        if (data.group) {
+            var item1 = data.group;
+            var text1 =
+                '<tr>' +
+                '    <td style="background-color: #e08e0b"><span>' + item1.groupName + '</span></td>' +
+                '    <td style="background-color: #e08e0b"><span>' + item1.workNum + '</span></td>' +
+                '    <td style="background-color: #e08e0b"><span>' + item1.actualNum + '</span></td>' +
+                '    <td style="background-color: #e08e0b"><span>' + item1.userNames + '</span></td>' +
+                '</tr>'
+            $("#work-group").append(text1);
+        }
+        if (data.otherGroups && data.otherGroups.length > 0) {
+            var item2 = data.otherGroups;
+            var item2Length = data.otherGroups.length;
+            var item2Data = [];
+            for (var i = 0; i < item2Length; i++) {
+                var text2 =
+                    '<tr>' +
+                    '    <td><span>' + item2[i].groupName + '</span></td>' +
+                    '    <td><span>' + item2[i].workNum + '</span></td>' +
+                    '    <td><span>' + item2[i].actualNum + '</span></td>' +
+                    '    <td><span>' + item2[i].userNames + '</span></td>' +
+                    '</tr>'
+                item2Data.push(text2);
+            }
+            $("#work-group").append(item2Data);
+        }
+    }
 
     /**
      * 添加
@@ -137,7 +291,11 @@
             exportUrl: prefix + "/export",
             modalName: "售后服务",
             search: false,
-            showExport: true,
+            showExport: false,
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
             queryParams: function (p) {
                 var params = {};
                 params.beginTime = $("#startTime").val();
@@ -152,9 +310,7 @@
                 search.isAsc = p.order;
                 return search;
             },
-            columns: [{
-                checkbox: true
-            },
+            columns: [
                 {
                     field: 'id',
                     title: '售后服务主键',
@@ -162,11 +318,10 @@
                 },
                 {
                     field: 'inputBatchInfo',
-                    title: '录入批次信息',
+                    title: '退货建档信息',
                     sortable: true,
-                    width: 800,
-                    formatter: function (value, row, index) {
-                        return "<div title='" + value + "'; style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:800px;word-wrap:break-all;word-break:break-all;'>" + value + "</div>";
+                    formatter: function (value) {
+                        return $.table.tooltip(value, 30);
                     }
                 },
                 {
@@ -187,7 +342,6 @@
                     align: 'center',
                     formatter: function (value, row, index) {
                         var actions = [];
-                        // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
                         actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
                         return actions.join('');
                     }
@@ -262,9 +416,9 @@
                 }
                 item.push('<tr>' +
                     '<td><a href="javascript:void(0)" onclick="showSearchDetail(this)"><span name="batchItem" style="font-weight: bold;color: blue">' + data[i].searchItem + '</span></a></td>' +
-                    '<td><span style="font-weight: bold;color: red">'+ totalNum + '</span></td>' +
-                    '<td><span>'+ sTime +'</span><span>至</span><span>'+ eTime +'</span></td>' +
-                    '<td><span>' + userNames+ '</span></td>' +
+                    '<td><span style="font-weight: bold;color: red">' + totalNum + '</span></td>' +
+                    '<td><span>' + sTime + '</span><span>至</span><span>' + eTime + '</span></td>' +
+                    '<td><span>' + userNames + '</span></td>' +
                     '</tr>')
             }
             $("#search-info-data").append(item);

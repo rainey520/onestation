@@ -133,4 +133,14 @@ public class CodeUtils {
     public static String getMesCode(){
         return "MES" + getCode();
     }
+
+    /**
+     * 获取指定位数随机数
+     * @param number 指定位数
+     * @return 结果
+     */
+    public static String getRandomStr(int number){
+        String value = String.valueOf((long) ((Math.random() * (999999999999L - 100000000000L)) + 100000000000L));
+        return value.substring(0, number);
+    }
 }

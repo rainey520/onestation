@@ -1,7 +1,6 @@
 package com.ruoyi.project.product.importConfig.mapper;
 
 import com.ruoyi.project.product.importConfig.domain.ImportConfig;
-import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Param;
 
 
@@ -40,6 +39,20 @@ public interface ImportConfigMapper
      * @return 结果
      */
 	public int deleteImportConfigByType(@Param("companyId") Integer companyId, @Param("cType") Integer cType);
+
+	/**
+	 * 通过规则名称查询配置信息
+	 * @param companyId 公司id
+	 * @param conRule 规则信息
+	 * @return 结果
+	 */
+	ImportConfig selectConfigByRule(@Param("companyId") Integer companyId, @Param("conRule") String conRule);
+	/**
+	 * 修改配置信息
+	 * @param importConfig 配置信息
+	 * @return 结果
+	 */
+	int updateConfig(ImportConfig importConfig);
 	
 
 	

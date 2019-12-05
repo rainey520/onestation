@@ -1,3 +1,83 @@
 # 添加产品工价
 ALTER TABLE `onestation`.`dev_product_list`
 ADD COLUMN `labour_price` FLOAT(7,2) NULL DEFAULT 0.00 COMMENT '产品工价' AFTER `rule_id`;
+
+
+
+########################################  小组工单功能新增SQL  2019-11-30 ###################################
+
+### 小组工单关联表管理
+CREATE TABLE `onestation`.`tab_group_work` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `company_id` INT NULL COMMENT '公司id',
+  `group_id` INT NULL COMMENT '分配所在小组id',
+  `work_id` INT NULL COMMENT '工单id',
+  `work_code` VARCHAR(125) NULL COMMENT '工单号',
+  `pn_code` VARCHAR(60) NULL COMMENT '产品信息',
+  `work_num` INT NULL COMMENT '分配在该小组的工单数量',
+  PRIMARY KEY (`id`))
+COMMENT = '小组工单关联表管理';
+ALTER TABLE `onestation`.`tab_group_work`
+ADD COLUMN `c_time` DATETIME NULL COMMENT '分配时间' AFTER `work_num`;
+ALTER TABLE `onestation`.`tab_group_work`
+ADD COLUMN `actual_num` INT NULL DEFAULT 0 COMMENT '该小组该工单实际做的数量' AFTER `c_time`;
+ALTER TABLE `onestation`.`tab_group_work`
+CHANGE COLUMN `actual_num` `actual_num` INT(11) NULL DEFAULT '0' COMMENT '该小组该工单实际做的数量' AFTER `work_num`;
+ALTER TABLE `onestation`.`tab_group_work`
+ADD COLUMN `line_id` INT NULL COMMENT '工单产线id即工单分配的角色id' AFTER `work_id`;
+
+
+### 小组信息
+CREATE TABLE `onestation`.`tab_group_info` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '小组主键id',
+  `company_id` INT NULL COMMENT '公司id',
+  `group_name` VARCHAR(45) NULL COMMENT '小组名称',
+  `c_time` DATETIME NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`))
+COMMENT = '小组信息';
+
+### 小组员工关联表
+CREATE TABLE `onestation`.`tab_group_user` (
+  `group_id` INT NULL COMMENT '小组id',
+  `user_id` INT NULL COMMENT '用户id')
+COMMENT = '小组员工关联表';
+
+### 工单分配小组人员历史表
+CREATE TABLE `onestation`.`tab_group_work_user` (
+  `gw_id` INT NULL COMMENT '小组工单关联表管理主键id',
+  `user_id` INT NULL COMMENT '用户id')
+COMMENT = '工单分配小组人员历史表';
+
+### 工单产品建档信息
+CREATE TABLE `onestation`.`tab_group_work_info` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '建档主键id',
+  `group_id` INT NULL COMMENT '小组id',
+  `work_id` INT NULL COMMENT '工单id',
+  `pn_main` VARCHAR(100) NULL COMMENT '每个产品建档信息',
+  `sign` VARCHAR(24) NULL DEFAULT '000000000000000000000000' COMMENT '扫码排序预留字段',
+  `status` CHAR(1) NULL DEFAULT 0 COMMENT '该产品扫码完成状态(默认0未完成、1已完成)',
+  PRIMARY KEY (`id`))
+COMMENT = '工单产品建档信息';
+
+### 修改导入配置表信息
+ALTER TABLE `onestation`.`tab_import_config`
+ADD COLUMN `con_rule` VARCHAR(60) NULL COMMENT '建档规则前部分信息' AFTER `con5`,
+CHANGE COLUMN `con1` `con1` INT(11) NULL DEFAULT NULL COMMENT '产品编码、半产品编码、建档规则后半部分随机数位置' ;
+
+### 增加索引
+ALTER TABLE `onestation`.`tab_group_work_info`
+ADD INDEX `gwi_index` (`work_id` ASC, `status` ASC) VISIBLE;
+
+### 售后管理新增工单id
+ALTER TABLE `onestation`.`tab_after_service`
+ADD COLUMN `work_id` INT NULL COMMENT '扫码的产品工单id' AFTER `input_batch_info`;
+
+### 小组工单关联表管理新增任务完成标记和完成时间
+ALTER TABLE `onestation`.`tab_group_work`
+ADD COLUMN `finish_tag` CHAR NULL DEFAULT 0 COMMENT '任务完成标记(0、默认值未完成，1、已完成)' AFTER `c_time`,
+ADD COLUMN `finish_time` DATETIME NULL COMMENT '任务完成时间' AFTER `finish_tag`;
+
+
+
+
+

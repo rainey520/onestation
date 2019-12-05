@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="AfterService" id="AfterServiceResult">
         <result property="id"    column="id"    />
         <result property="inputBatchInfo"    column="input_batch_info"    />
+        <result property="workId"    column="work_id"    />
         <result property="inputTime"    column="input_time"    />
         <result property="inputUserId"    column="input_user_id"    />
         <result property="batchCode"    column="batch_code"    />
@@ -17,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 	
 	<sql id="selectAfterServiceVo">
-        select id, input_batch_info, input_time, input_user_id, batch_code,company_id from tab_after_service
+        select id, input_batch_info,work_id, input_time, input_user_id, batch_code,company_id from tab_after_service
     </sql>
 	
     <select id="selectAfterServiceList" parameterType="AfterService" resultMap="AfterServiceResult">
@@ -73,6 +74,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="inputBatchInfo != null  and inputBatchInfo != ''  ">input_batch_info,</if>
             <if test="companyId != null ">company_id,</if>
+            <if test="workId > 0 ">work_id,</if>
 			<if test="inputTime != null  ">input_time,</if>
 			<if test="inputUserId != null  ">input_user_id,</if>
 			<if test="batchCode != null  and batchCode != ''  ">batch_code,</if>
@@ -80,6 +82,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="inputBatchInfo != null  and inputBatchInfo != ''  ">#{inputBatchInfo},</if>
             <if test="companyId != null ">#{companyId},</if>
+            <if test="workId > 0 ">#{workId},</if>
 			<if test="inputTime != null  ">#{inputTime},</if>
 			<if test="inputUserId != null  ">#{inputUserId},</if>
 			<if test="batchCode != null  and batchCode != ''  ">#{batchCode},</if>
@@ -131,6 +134,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="searchEndTime != null and searchEndTime != ''"><!-- 结束时间检索 -->
             AND date_format(input_time,'%y%m%d') &lt;= date_format(#{searchEndTime},'%y%m%d')
         </if>
+    </select>
+
+
+    <resultMap type="AfterService" id="BackInfoResult">
+        <result property="id"    column="id"    />
+        <result property="inputBatchInfo"    column="input_batch_info"    />
+        <result property="workId"    column="work_id"    />
+        <result property="inputTime"    column="input_time"    />
+        <result property="inputUserId"    column="input_user_id"    />
+        <result property="batchCode"    column="batch_code"    />
+        <result property="companyId"    column="company_id"    />
+    </resultMap>
+    <select id="selectAfterServiceByWorkId" resultMap="BackInfoResult">
+        select * from tab_after_service where work_id = #{workId}
     </select>
 
 </mapper>

@@ -1,7 +1,9 @@
 package com.ruoyi.project.system.user.mapper;
 
-import java.util.List;
 import com.ruoyi.project.system.user.domain.UserRole;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 用户表 数据层
@@ -41,4 +43,12 @@ public interface UserRoleMapper
      * @return 结果
      */
     public int batchUserRole(List<UserRole> userRoleList);
+
+    /**
+     * 通过用户id角色id查询工单操作权限信息
+     * @param userId 用户id
+     * @param roleId 角色id
+     * @return 结果
+     */
+    UserRole selectUserRoleInfo(@Param("userId") int userId, @Param("roleId") int roleId);
 }

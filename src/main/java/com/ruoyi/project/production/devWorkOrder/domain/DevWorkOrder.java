@@ -238,7 +238,8 @@ public class DevWorkOrder extends BaseEntity {
     /**
      * 加班工时
      */
-    private String work1;//1.5
+    //小组工单操作权限常量  操作权限  0、没有权限，1、有权限
+    private String work1;
     private String work2;//2.0
     private String work3;//3.0
 

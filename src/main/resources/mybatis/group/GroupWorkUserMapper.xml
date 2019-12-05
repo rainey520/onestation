@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.group.groupWork.mapper.GroupWorkUserMapper">
+    
+    <resultMap type="GroupWorkUser" id="GroupWorkUserResult">
+        <result property="gwId"    column="gw_id"    />
+        <result property="userId"    column="user_id"    />
+    </resultMap>
+	
+	<sql id="selectGroupWorkUserVo">
+        select gw_id, user_id from tab_group_work_user
+    </sql>
+	
+    <select id="selectGroupWorkUserList" parameterType="GroupWorkUser" resultMap="GroupWorkUserResult">
+        <include refid="selectGroupWorkUserVo"/>
+        <where>  
+            <if test="gwId != null "> and gw_id = #{gwId}</if>
+             <if test="userId != null "> and user_id = #{userId}</if>
+         </where>
+    </select>
+    
+    <select id="selectGroupWorkUserById" parameterType="Integer" resultMap="GroupWorkUserResult">
+        <include refid="selectGroupWorkUserVo"/>
+        where gw_id = #{gwId}
+    </select>
+        
+    <insert id="insertGroupWorkUser" parameterType="GroupWorkUser">
+        insert into tab_group_work_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="gwId != null  ">gw_id,</if>
+			<if test="userId != null  ">user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="gwId != null  ">#{gwId},</if>
+			<if test="userId != null  ">#{userId},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateGroupWorkUser" parameterType="GroupWorkUser">
+        update tab_group_work_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null  ">user_id = #{userId},</if>
+        </trim>
+        where gw_id = #{gwId}
+    </update>
+
+	<delete id="deleteGroupWorkUserById" parameterType="Integer">
+        delete from tab_group_work_user where gw_id = #{gwId}
+    </delete>
+	
+    <delete id="deleteGroupWorkUserByIds" parameterType="String">
+        delete from tab_group_work_user where gw_id in 
+        <foreach item="gwId" collection="array" open="(" separator="," close=")">
+            #{gwId}
+        </foreach>
+    </delete>
+
+    <!--查询结束工单的员工信息-->
+    <select id="selectGroupFinishWorkUsers" resultType="java.lang.String">
+        SELECT c.user_name FROM tab_group_work_user a,tab_group_work b,sys_user c where a.gw_id = b.id and a.user_id = c.user_id
+        and b.id = #{groupWorkId}
+    </select>
+    
+</mapper>

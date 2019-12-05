@@ -20,6 +20,8 @@ public class AfterService extends BaseEntity
 	/** 录入批次信息 */
 	@Excel(name = "批次信息", type = Excel.Type.EXPORT)
 	private String inputBatchInfo;
+	/** 工单id */
+	private int workId;
 	/** 搜索条件，多个分号隔开 */
 	private String searchItems;
 	/** 录入时间 */
@@ -45,6 +47,14 @@ public class AfterService extends BaseEntity
 	 */
 	private String searchBeginTime;
 	private String searchEndTime;
+
+	public int getWorkId() {
+		return workId;
+	}
+
+	public void setWorkId(int workId) {
+		this.workId = workId;
+	}
 
 	public String getSearchBeginTime() {
 		return searchBeginTime;
@@ -145,12 +155,16 @@ public class AfterService extends BaseEntity
 		return "AfterService{" +
 				"id=" + id +
 				", inputBatchInfo='" + inputBatchInfo + '\'' +
+				", workId=" + workId +
 				", searchItems='" + searchItems + '\'' +
 				", inputTime=" + inputTime +
 				", inputUserId=" + inputUserId +
 				", inputUserName='" + inputUserName + '\'' +
 				", batchCode='" + batchCode + '\'' +
 				", companyId=" + companyId +
+				", menuId=" + menuId +
+				", searchBeginTime='" + searchBeginTime + '\'' +
+				", searchEndTime='" + searchEndTime + '\'' +
 				'}';
 	}
 }

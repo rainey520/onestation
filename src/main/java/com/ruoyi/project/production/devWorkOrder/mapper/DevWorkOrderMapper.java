@@ -111,9 +111,11 @@ public interface DevWorkOrderMapper {
     /**
      * 查询当天所有的工单
      *
-     * @return
+     * @param companyId 公司id
+     * @param wlSign 生产所在位置，流水线、车间、小组
+     * @return 结果
      */
-    List<DevWorkOrder> selectWorkOrderAllToday(@Param("companyId") Integer companyId);
+    List<DevWorkOrder> selectWorkOrderAllToday(@Param("companyId") Integer companyId,@Param("wlSign") Integer wlSign);
 
     /**
      * 查询对应时间段内产线已经提交的所以工单数据
@@ -250,11 +252,10 @@ public interface DevWorkOrderMapper {
 
     /**
      * 通过工单id查询工单信息
-     * @param companyId 工单id
      * @param workId 工单id
      * @return 结果
      */
-    DevWorkOrder selectWorkOrderInfoById(@Param("companyId") Integer companyId,@Param("workId") Integer workId);
+    DevWorkOrder selectWorkOrderInfoById(@Param("workId") Integer workId);
 
     /**
      * 查询单工位未配置的下到对应车间的未确认数据的工单信息

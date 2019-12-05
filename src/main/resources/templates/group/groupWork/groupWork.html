@@ -1,0 +1,269 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+
+                        <li>
+                            工单号：
+                            <select id="workorderNumber" name="workorderNumber"
+                                    th:with="workList=${@workOrder.selectWorkListInSw(2)}">
+                                <option value="">请选择</option>
+                                <option th:each="item:${workList}" th:value="${item.workorderNumber}"
+                                        th:text="${item.workorderNumber}"></option>
+                            </select>
+                        </li>
+
+                        <li>
+                            产品编码：
+                            <select id="productCode" name="productCode"
+                                    th:with="pnList=${@product.selectProductAllByCompanyId(0)}">
+                                <option value="">请选择</option>
+                                <option th:each="item:${pnList}" th:value="${item.productCode}"
+                                        th:text="${item.productCode}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            工单状态：
+                            <select id="workorderStatus" name="workorderStatus">
+                                <option value="">请选择</option>
+                                <option value="0">未开始</option>
+                                <option value="1">进行中</option>
+                                <option value="2">已完成</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="formReset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="add()">
+                <i class="fa fa-plus"></i> 添加工单
+            </a>
+            <a class="btn btn-info" onclick="createMainMesInfo()" shiro:hasPermission="device:devWorkOrder:add">
+                <i class="fa fa-credit-card"></i> 建档配置
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+
+    $(function () {
+        $("#workorderNumber").select2({
+            width: "260px",
+        });
+        $("#productCode").select2({
+            width: "260px",
+        });
+        $("#workorderStatus").select2({
+            width: "80px",
+        });
+
+    });
+
+    // 重置搜索表单信息
+    function formReset() {
+        $('#formId')[0].reset();//input标签重置
+        $("select").val(null).trigger("change"); // select2标签重置
+    }
+
+    var prefix = ctx + "group/groupWork";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            modalName: "工单信息",
+            search: false,
+            showExport: false,
+            showSearch: true,
+            showRefresh: true,
+            showColumns: false,
+            showToggle: true,
+            sortName: 'createTime',
+            sortOrder: 'desc',
+            columns: [
+                {
+                    field: 'id',
+                    title: '',
+                    visible: false
+                },
+                {
+                    field: 'workorderNumber',
+                    title: '工单号',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return '<span style="font-weight: bold;color:#1E0FBE">' + value + '</span>';
+                    }
+                },
+                {
+                    field: 'paramConfig',
+                    title: '工单角色',
+                    formatter: function (value, row, index) {
+                        return row.paramConfig;
+                    }
+                },
+                {
+                    field: 'productNumber',
+                    title: '生产数量/完成数量',
+                    formatter: function (value, row, index) {
+                        return '<span style="color: red;font-weight: bold">' + row.productNumber + '</span><span>/</span><span style="color: green;font-weight: bold">' + row.cumulativeNumber + '</span>'
+                    }
+                },
+                {
+                    field: 'workorderStatus',
+                    title: '生产状态',
+                    formatter: function (value, row, index) {
+                        if (row.workorderStatus == 0) {
+                            return '<span style="font-weight: bold;color: blue">未进行</span>';
+                        } else if (row.workorderStatus == 1) {
+                            return '<span style="font-weight: bold;color: green">进行中</span>';
+                        } else if (row.workorderStatus == 2) {
+                            return '<span style="font-weight: bold;color: orangered">已完成</span>';
+                        }
+                    }
+                },
+                {
+                    field: 'productCode',
+                    title: '产品编码',
+                    sortable: true
+                },
+                {
+                    field: 'productionStart',
+                    title: '计划开始时间',
+                    sortable: true
+                },
+                {
+                    title: '工单管理',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-info btn-xs" href="javascript:void(0)" onclick="distributeWork(\'' + row.workorderNumber + '\',\'' + row.id + '\',' +
+                            '\'' + row.productNumber + '\',\'' + row.workorderStatus + '\')"><i></i>分配</a> ');
+
+                        // 只有生产状态处于未生产的工单才允许删除
+                        if (row.workorderStatus == 1) {
+                            actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="finishWork(\'' + row.id + '\',\'' + row.productNumber + '\')"><i></i>结束</a> ');
+                        } else {
+                            actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" disabled="true"><i></i>完成</a> ');
+                        }
+                        if (row.workorderStatus == 0) {
+                            actions.push('<a class="btn btn-danger btn-xs" href="javascript:void(0)" onclick="remove(\'' + row.id + '\')"><i></i>删除</a> ');
+                        } else {
+                            actions.push('<a class="btn btn-danger btn-xs" href="javascript:void(0)" disabled="true"><i></i>删除</a> ');
+                        }
+                        return actions.join('');
+                    }
+                }
+            ]
+        };
+        $.table.init(options);
+    });
+
+    /**
+     * 新增小组工单
+     */
+    function add() {
+        var url = $.table._option.createUrl;
+        $.modal.open("添加小组工单", url, 800, 600);
+    }
+
+    /**
+     * 建档配置
+     */
+    function createMainMesInfo() {
+        var url = prefix + "/workMainMesConfig";
+        $.modal.open("建档配置", url, 500, 400);
+    }
+
+    /**
+     * 删除工单
+     */
+    function remove(id) {
+        $.modal.confirm("确定删除该条工单信息信息吗？", function () {
+            var url = prefix + "/removeWork";
+            var data = {id: id};
+            $.operate.submit(url, "post", "json", data);
+        });
+    }
+
+    /**
+     * 分配工单
+     */
+    function distributeWork(workCode, workId, workNum, workStatus) {
+        var url = prefix + "/distributeWork?workId=" + workId + "&workNum=" + workNum + "&workStatus=" + workStatus;
+        $.modal.open("工单" + workCode + "--分配", url);
+    }
+
+    /**
+     * 结束工单操作
+     */
+    function finishWork(id, workNum) {
+        $.modal.confirm("确定结束该工单信息吗？", function () {
+            var url = prefix + "/finishWork";
+            var data = {id: id};
+            var config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                beforeSend: function () {
+                    $.modal.loading("正在处理中，请稍后...");
+                },
+                success: function (result) {
+                    if (result.code == web_status.SUCCESS) {
+                        $.modal.msgSuccess(result.msg);
+                        $.table.refresh();
+                        if (result.data < workNum) {
+                            removeWorkInfoNotScan(id, result.data);
+                        }
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                    $.modal.closeLoading();
+                }
+            };
+            $.ajax(config)
+        });
+    }
+
+
+    /**
+     * 删除工单未扫码的建档信息
+     */
+    function removeWorkInfoNotScan(workId, workNum) {
+        layer.confirm("该工单已完成数量" + workNum + ",确认删除其他未生产的建档信息吗", {
+            icon: 3,
+            title: "系统提示",
+            btn: ['确认'],
+            btnclass: ['btn btn-primary']
+        }, function (index) {
+            if (index) {
+                $.post(ctx + "group/groupWorkInfo/removeWorkInfoNotScan?workId=" + workId);
+                layer.close(index);
+            }
+        });
+    }
+</script>
+</body>
+</html>

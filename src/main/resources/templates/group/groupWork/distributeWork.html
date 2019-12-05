@@ -1,0 +1,229 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/layer/laydate/laydate.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            分配小组：
+                            <select id="groupId" name="groupId" style="width: 180px">
+                                <option value="">请选择</option>
+                                <option th:if="${not #lists.isEmpty(cfWorkList) && cfWorkList.size() > 0}"
+                                        th:each="item:${cfWorkList}"
+                                        th:text="${item.groupName}" th:value="${item.id}"></option>
+                            </select>
+                        </li>
+
+                        <li>
+                            该小组数量：
+                            <input id="workNum" name="workNum" style="width: 80px" type="number">
+                            <span style="color: red;font-weight: bold">工单总数：</span><span id="allNum" style="color: red"
+                                                                                         th:text="${allNum}"></span>&nbsp;&nbsp;
+                            <span style="font-weight: bold;color: green">已分配数量：</span><span id="disNum"
+                                                                                            style="color: green"
+                                                                                            th:text="${disNum}"></span>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-sm" onclick="disWork()" th:if="${workStatus != 2}"><i></i>分配</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="group:groupWork:add">
+                <i class="fa fa-plus"></i> 工单分配信息
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<script th:src="@{/ajax/libs/layer/laydate/laydate.js}"></script>
+<div th:include="include::footer"></div>
+<script th:inline="javascript">
+
+    var prefix = ctx + "group/groupWork";
+
+    $(function () {
+        $("#groupId").select2({
+            width: "180px",
+        });
+    })
+
+    /**
+     * 保存分配工单
+     */
+    function disWork() {
+        if ($.validate.form()) {
+            var workId = [[${workId}]];
+            var groupId = $("#groupId").val();
+            if ($.common.isEmpty(groupId)) {
+                $.modal.alertWarning("请选择分配的小组");
+                return;
+            }
+            var disNum = parseInt($("#disNum").html());
+            var allNum = parseInt([[${allNum}]]);
+            var workNum = $("#workNum").val();
+            if ($.common.isEmpty(workNum) || workNum <= 0 || (workNum + '').indexOf('.') != -1 || workNum > (allNum - disNum)) {
+                $.modal.alertWarning("请检查分配的数量是否填写正确");
+                return;
+            }
+            var data = {
+                workId: workId,
+                groupId: groupId,
+                workNum: workNum
+            }
+            var config = {
+                url: prefix + "/saveDistributeWork",
+                type: "post",
+                dataType: "json",
+                data: data,
+                beforeSend: function () {
+                    $.modal.loading("正在处理中，请稍后...");
+                },
+                success: function (result) {
+                    if (result.code == web_status.SUCCESS) {
+                        $.modal.msg("保存成功,正在刷新数据请稍后……", modal_status.SUCCESS);
+                        $.table.refresh();
+                        // 刷新数据
+                        reloadData();
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                    $.modal.closeLoading();
+                }
+            };
+            $.ajax(config)
+        }
+    }
+
+    var data = {
+        workId: [[${workId}]],
+    }
+    $(function () {
+        var options = {
+            url: prefix + "/disWorkList",
+            modalName: "小组工单关联管理",
+            queryParams: data,
+            search: false,
+            showExport: false,
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            columns: [
+                {
+                    field: 'id',
+                    title: '主键id',
+                    visible: false
+                },
+                {
+                    field: 'groupId',
+                    title: '小组',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return row.groupName;
+                    }
+                },
+                {
+                    field: 'workCode',
+                    title: '工单号',
+                    sortable: true
+                },
+                {
+                    field: 'pnCode',
+                    title: '产品信息',
+                    sortable: true
+                },
+                {
+                    title: '分配数/完成数',
+                    formatter: function (value, row, index) {
+                        return '<span style="color: red;font-weight: bold">'+ row.workNum +'</span><span>/</span><span style="color: green;font-weight: bold">'+ row.actualNum +'</span>'
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if (row.opSign == 1 && [[${workStatus == 0}]]) {
+                            actions.push('<a class="btn btn-danger btn-xs" href="#" onclick="remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        }
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    /**
+     * 删除该条工单分配信息
+     */
+    function remove(id) {
+        $.modal.confirm("确定删除该条工单分配信息吗？", function () {
+            var url = prefix + "/remove?";
+            var data = {"id": id};
+            var config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                beforeSend: function () {
+                    $.modal.loading("正在处理中，请稍后...");
+                },
+                success: function (result) {
+                    $.operate.ajaxSuccess(result);
+                    reloadData();
+                }
+            };
+            $.ajax(config)
+        });
+    }
+
+
+    /**
+     * 关闭窗体
+     */
+    function submitHandler() {
+        $.modal.close();
+    }
+
+    /**
+     * 刷新数据
+     */
+    function reloadData() {
+        var workId = [[${workId}]];
+        $("#groupId").children().remove();
+        var url = prefix + "/reloadData?workId=" + workId;
+        $.post(url, function (res) {
+            var item = [];
+            if (res && res.code == web_status.SUCCESS) {
+                var data = res.data;
+                item.push("<option value='' >请选择</option>")
+                if (data.cfWorkList && data.cfWorkList.length > 0) {
+                    var groupList = data.cfWorkList;
+                    var length = data.cfWorkList.length;
+                    for (var i = 0; i < length; i++) {
+                        item.push("<option value='" + groupList[i].id + "'>" + groupList[i].groupName + "</option>");
+                    }
+                    ;
+                }
+                $("#groupId").append(item);
+                $("#workNum").val(0);
+                $("#disNum").text(data.disNum);
+            }
+        })
+    }
+</script>
+</body>
+</html>

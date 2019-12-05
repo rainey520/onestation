@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.group.groupInfo.mapper.GroupUserMapper">
+    
+    <resultMap type="GroupUser" id="GroupUserResult">
+        <result property="groupId"    column="group_id"    />
+        <result property="userId"    column="user_id"    />
+    </resultMap>
+	
+	<sql id="selectGroupUserVo">
+        select group_id, user_id from tab_group_user
+    </sql>
+	
+    <select id="selectGroupUserList" parameterType="GroupUser" resultMap="GroupUserResult">
+        <include refid="selectGroupUserVo"/>
+        <where>  
+            <if test="groupId != null "> and group_id = #{groupId}</if>
+             <if test="userId != null "> and user_id = #{userId}</if>
+         </where>
+    </select>
+    
+    <select id="selectGroupUserById" parameterType="Integer" resultMap="GroupUserResult">
+        <include refid="selectGroupUserVo"/>
+        where group_id = #{groupId}
+    </select>
+        
+    <insert id="insertGroupUser" parameterType="GroupUser">
+        insert into tab_group_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="groupId != null  ">group_id,</if>
+			<if test="userId != null  ">user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="groupId != null  ">#{groupId},</if>
+			<if test="userId != null  ">#{userId},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateGroupUser" parameterType="GroupUser">
+        update tab_group_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null  ">user_id = #{userId},</if>
+        </trim>
+        where group_id = #{groupId}
+    </update>
+
+    <!--通过小组id删除小组员工关联-->
+	<delete id="deleteGroupUserByGroupId" parameterType="Integer">
+        delete from tab_group_user where group_id = #{groupId}
+    </delete>
+	
+    <delete id="deleteGroupUserByIds" parameterType="String">
+        delete from tab_group_user where group_id in 
+        <foreach item="groupId" collection="array" open="(" separator="," close=")">
+            #{groupId}
+        </foreach>
+    </delete>
+
+    <!--查询对应组所有的员工信息-->
+    <select id="selectGroupUserByGid" resultType="java.lang.String">
+        select b.user_name from tab_group_user a,sys_user b where a.user_id = b.user_id and a.group_id = #{groupId}
+    </select>
+
+    <!--查询小组配置的员工信息-->
+    <select id="selectGroupUserConfig" resultType="com.ruoyi.project.group.groupInfo.domain.GroupUser">
+        select a.user_id as userId,a.user_name as userName from sys_user a,tab_group_user b
+        where a.user_id = b.user_id and  b.group_id = #{groupId} and a.company_id = #{companyId}
+    </select>
+
+    <!--查询小组未配置的员工信息-->
+    <select id="selectGroupUserOther" resultType="com.ruoyi.project.group.groupInfo.domain.GroupUser">
+        select a.user_id as userId,a.user_name as userName from sys_user a left join tab_group_user b on a.user_id = b.user_id and b.group_id = #{groupId}
+        where a.company_id = #{companyId} and b.user_id is null
+    </select>
+
+    <!--查询小组配置信息-->
+    <select id="selectGroupUserInfoByGid" resultMap="GroupUserResult">
+        SELECT * FROM tab_group_user where group_id = #{groupId}
+    </select>
+
+    <!--查询小组员工关联信息-->
+    <select id="selectGroupUserUniqueById" resultMap="GroupUserResult">
+        SELECT * FROM tab_group_user where group_id = #{groupId} and user_id = #{userId} limit 1
+    </select>
+</mapper>

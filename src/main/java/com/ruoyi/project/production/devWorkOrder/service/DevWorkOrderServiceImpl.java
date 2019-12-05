@@ -551,13 +551,18 @@ public class DevWorkOrderServiceImpl implements IDevWorkOrderService {
     /**
      * 查询当天所有工单
      *
-     * @return
+     * @param wlSign 工单所在位置 0 流水线、1、车间，2、小组
+     * @return 结果
      */
-    public List<DevWorkOrder> selectWorkOrderAllToday(Cookie[] cookies) {
-        User user = JwtUtil.getTokenCookie(cookies);
-        List<DevWorkOrder> workOrders = devWorkOrderMapper.selectWorkOrderAllToday(user.getCompanyId());
-        getLineOrHouseName(workOrders, user);
-        return workOrders;
+    public List<DevWorkOrder> selectWorkOrderAllToday(int wlSign) {
+        User user = JwtUtil.getUser();
+        List<DevWorkOrder> workOrders = devWorkOrderMapper.selectWorkOrderAllToday(user.getCompanyId(),wlSign);
+        if (WorkConstants.SING_GROUP != wlSign) {
+            getLineOrHouseName(workOrders, user);
+            return workOrders;
+        } else {
+            return workOrders;
+        }
     }
 
     /**
@@ -1510,7 +1515,7 @@ public class DevWorkOrderServiceImpl implements IDevWorkOrderService {
         if (user == null) {
             return Collections.emptyList();
         }
-        List<DevWorkOrder> workOrders = devWorkOrderMapper.selectWorkOrderAllToday(user.getCompanyId());
+        List<DevWorkOrder> workOrders = devWorkOrderMapper.selectWorkOrderAllToday(user.getCompanyId(),WorkConstants.SING_SINGLE);
         return workOrders;
     }
 

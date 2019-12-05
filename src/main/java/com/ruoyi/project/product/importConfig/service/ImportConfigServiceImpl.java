@@ -1,16 +1,16 @@
 package com.ruoyi.project.product.importConfig.service;
 
 
-import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.exception.BusinessException;
 import com.ruoyi.framework.jwt.JwtUtil;
+import com.ruoyi.project.product.importConfig.domain.ImportConfig;
+import com.ruoyi.project.product.importConfig.mapper.ImportConfigMapper;
 import com.ruoyi.project.system.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.project.product.importConfig.mapper.ImportConfigMapper;
-import com.ruoyi.project.product.importConfig.domain.ImportConfig;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.annotation.Target;
 import java.util.Date;
 
 
@@ -71,5 +71,27 @@ public class ImportConfigServiceImpl implements IImportConfigService
 		    return 0;
 		}
 		return importConfigMapper.deleteImportConfigByType(user.getCompanyId(),cType);
+	}
+
+	/**
+	 * 新增或修改导入信息
+	 * @param importConfig 导入信息
+	 * @return 结果
+	 */
+	@Override
+	public int saveConfig(ImportConfig importConfig) {
+		User user = JwtUtil.getUser();
+		if (user == null) {
+			throw new BusinessException(UserConstants.NOT_LOGIN);
+		}
+		if (importConfig.getId() == null) {
+			// 新增
+			importConfig.setCompanyId(user.getCompanyId());
+			importConfig.setcTime(new Date());
+			return importConfigMapper.insertImportConfig(importConfig);
+		} else {
+			// 修改
+			return importConfigMapper.updateConfig(importConfig);
+		}
 	}
 }

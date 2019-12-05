@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.group.groupWork.mapper.GroupWorkMapper">
+    
+    <resultMap type="GroupWork" id="GroupWorkResult">
+        <result property="id"    column="id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="groupId"    column="group_id"    />
+        <result property="workId"    column="work_id"    />
+        <result property="lineId"    column="line_id"    />
+        <result property="workCode"    column="work_code"    />
+        <result property="pnCode"    column="pn_code"    />
+        <result property="workNum"    column="work_num"    />
+        <result property="actualNum"    column="actual_num"    />
+        <result property="cTime"    column="c_time"    />
+        <result property="finishTag"    column="finish_tag"    />
+        <result property="finishTime"    column="finish_time"    />
+    </resultMap>
+	
+	<sql id="selectGroupWorkVo">
+        select id, company_id, group_id, work_id,line_id, work_code, pn_code, work_num, actual_num, c_time,finish_tag,finish_time from tab_group_work
+    </sql>
+
+
+    <resultMap type="GroupWork" id="GroupWorkResultInfo">
+        <result property="id"    column="id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="groupId"    column="group_id"    />
+        <result property="workId"    column="work_id"    />
+        <result property="lineId"    column="line_id"    />
+        <result property="workCode"    column="work_code"    />
+        <result property="pnCode"    column="pn_code"    />
+        <result property="workNum"    column="work_num"    />
+        <result property="actualNum"    column="actual_num"    />
+        <result property="cTime"    column="c_time"    />
+        <result property="workStatus"    column="workorder_status"    />
+        <result property="finishTag"    column="finish_tag"    />
+        <result property="finishTime"    column="finish_time"    />
+        <association property="groupName" column="group_id" select="selectGroupName">
+            <result property="groupName" column="group_name"/>
+        </association>
+    </resultMap>
+    <select id="selectGroupWorkList" parameterType="GroupWork" resultMap="GroupWorkResultInfo">
+         select a.id, a.company_id, a.group_id, a.work_id,a.line_id, a.work_code, a.pn_code, a.work_num, a.actual_num,
+         a.c_time,a.finish_tag,a.finish_time,b.workorder_status
+         from tab_group_work a,dev_work_order b where a.work_id = b.id
+         <if test="id != null "> and a.id = #{id}</if>
+         <if test="companyId != null "> and a.company_id = #{companyId}</if>
+         <if test="groupId != null "> and a.group_id = #{groupId}</if>
+         <if test="workId != null "> and a.work_id = #{workId}</if>
+         <if test="workCode != null  and workCode != '' "> and a.work_code = #{workCode}</if>
+         <if test="pnCode != null  and pnCode != '' "> and a.pn_code = #{pnCode}</if>
+         <if test="workNum != null "> and a.work_num = #{workNum}</if>
+         <if test="actualNum != null "> and a.actual_num = #{actualNum}</if>
+         <if test="cTime != null "> and a.c_time = #{cTime}</if>
+         <if test="workStatus != null "> and b.workorder_status = #{workStatus}</if>
+          order by a.c_time desc
+    </select>
+
+    <!--查看小组名称-->
+    <select id="selectGroupName" resultType="java.lang.String">
+        SELECT group_name FROM tab_group_info where id = #{groupId}
+    </select>
+    
+    <select id="selectGroupWorkById" parameterType="Integer" resultMap="GroupWorkResult">
+        <include refid="selectGroupWorkVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertGroupWork" parameterType="GroupWork" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_group_work
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="companyId != null  ">company_id,</if>
+			<if test="groupId != null  ">group_id,</if>
+			<if test="workId != null  ">work_id,</if>
+            <if test="lineId != null  ">line_id,</if>
+			<if test="workCode != null  and workCode != ''  ">work_code,</if>
+			<if test="pnCode != null  and pnCode != ''  ">pn_code,</if>
+			<if test="workNum != null  ">work_num,</if>
+			<if test="actualNum != null  ">actual_num,</if>
+			<if test="cTime != null  ">c_time,</if>
+            <if test="finishTag != null and finishTag !=''">finish_tag,</if>
+            <if test="finishTime != null  ">finish_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="companyId != null  ">#{companyId},</if>
+			<if test="groupId != null  ">#{groupId},</if>
+			<if test="workId != null  ">#{workId},</if>
+            <if test="lineId != null  ">#{lineId},</if>
+			<if test="workCode != null  and workCode != ''  ">#{workCode},</if>
+			<if test="pnCode != null  and pnCode != ''  ">#{pnCode},</if>
+			<if test="workNum != null  ">#{workNum},</if>
+			<if test="actualNum != null  ">#{actualNum},</if>
+			<if test="cTime != null  ">#{cTime},</if>
+            <if test="finishTag != null and finishTag !=''">#{finishTag},</if>
+            <if test="finishTime != null  ">#{finishTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateGroupWork" parameterType="GroupWork">
+        update tab_group_work
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="companyId != null  ">company_id = #{companyId},</if>
+            <if test="groupId != null  ">group_id = #{groupId},</if>
+            <if test="workId != null  ">work_id = #{workId},</if>
+            <if test="lineId != null  ">line_id = #{lineId},</if>
+            <if test="workCode != null  and workCode != ''  ">work_code = #{workCode},</if>
+            <if test="pnCode != null  and pnCode != ''  ">pn_code = #{pnCode},</if>
+            <if test="workNum != null  ">work_num = #{workNum},</if>
+            <if test="actualNum != null  ">actual_num = #{actualNum},</if>
+            <if test="cTime != null  ">c_time = #{cTime},</if>
+            <if test="finishTag != null and finishTag !=''">finish_tag = #{finishTag},</if>
+            <if test="finishTime != null  ">finish_time = #{finishTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteGroupWorkById" parameterType="Integer">
+        delete from tab_group_work where id = #{id}
+    </delete>
+
+    <delete id="deleteGroupWorkByIds" parameterType="String">
+        delete from tab_group_work where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--查询用户工单权限信息-->
+    <select id="selectWorkAuth" resultType="com.ruoyi.project.system.user.domain.UserRole">
+        SELECT user_id as userId,role_id as roleId FROM sys_user_role where user_id = #{userId} and role_id = #{roleId} limit 1
+    </select>
+
+    <!--通过工单id查询全部分配的数量-->
+    <select id="selectWorkDisNum" resultType="java.lang.Integer">
+        select sum(work_num) from tab_group_work where work_id = #{workId}
+    </select>
+
+    <!--查询对应小组是否有分配该工单-->
+    <select id="selectGroupWorkInfoById" resultMap="GroupWorkResult">
+        SELECT * FROM tab_group_work where group_id = #{groupId} and work_id = #{workId} limit 1
+    </select>
+
+    <!--删除关单小组关联信息-->
+    <delete id="deleteGroupWorkByWorkId" parameterType="Integer">
+        delete from tab_group_work where work_id = #{workId}
+    </delete>
+
+    <!--查询工单下发到小组的列表-->
+    <select id="selectGroupWorkByWorkId" resultMap="GroupWorkResultInfo">
+         SELECT * FROM tab_group_work where work_id = #{workId}
+    </select>
+
+    <!--通过扫码信息查询生产该产品的小组工单信息-->
+    <select id="selectGroupWorkOne" resultMap="GroupWorkResultInfo">
+        SELECT b.* FROM tab_group_work_info a,tab_group_work b where  a.work_id = b.work_id and a.group_id = b.group_id and a.pn_main = #{pnMain} limit 1
+    </select>
+
+    <!--小组结束对应工单任务-->
+    <update id="updateGroupWorkFinishTag">
+         update tab_group_work set finish_tag = #{finishTag},finish_time = now() where id = #{id}
+    </update>
+
+
+    <!--报表返回Result-->
+    <resultMap type="GroupWork" id="GroupWorkResultReport">
+        <result property="id"    column="id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="groupId"    column="group_id"    />
+        <result property="workId"    column="work_id"    />
+        <result property="lineId"    column="line_id"    />
+        <result property="workCode"    column="work_code"    />
+        <result property="pnCode"    column="pn_code"    />
+        <result property="workNum"    column="work_num"    />
+        <result property="actualNum"    column="actual_num"    />
+        <result property="workAllNum"    column="product_number"    />
+        <result property="workActNum"    column="cumulative_number"    />
+        <result property="workTime"    column="start_time"    />
+        <association property="groupName" column="group_id" select="selectGroupName">
+            <result property="groupName" column="group_name"/>
+        </association>
+    </resultMap>
+    <!--查询小组报表信息-->
+    <select id="selectGroupWorkReport" parameterType="com.ruoyi.project.production.report.domain.ComCost" resultMap="GroupWorkResultReport">
+        SELECT a.* ,b. product_number,b.cumulative_number,b.start_time FROM tab_group_work a,dev_work_order b where a.work_id = b.id
+        and a.company_id = #{companyId} and a.group_id = #{lineId} and b.work_sign = 1 and b.wl_sign = 2
+        <if test="productCode != null and productCode != ''">
+            and a.pn_code = #{productCode}
+        </if>
+        and b.start_time between #{startTime} and #{endTime}
+    </select>
+
+
+    <!--报表返回Result-->
+    <resultMap type="com.ruoyi.project.production.devWorkOrder.domain.DevWorkOrder" id="AllGroupWorkReport">
+        <result property="id"    column="id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="workorderNumber"    column="workorder_number"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productNumber"    column="product_number"    />
+        <result property="cumulativeNumber"    column="cumulative_number"    />
+        <result property="startTime"    column="start_time"    />
+    </resultMap>
+    <!--查询组装小组车间报表工单信息,已结束确认的小组工单-->
+    <select id="selectAllGroupWorkReport" parameterType="com.ruoyi.project.production.report.domain.ComCost" resultMap="AllGroupWorkReport">
+        SELECT * FROM dev_work_order where company_id = #{companyId} and work_sign = 1 and wl_sign = 2
+        and start_time between #{startTime} and #{endTime}
+        <if test="productCode != null and productCode != ''">
+            and product_code = #{productCode}
+        </if>
+    </select>
+
+    <!--查询对应工单的三个小组生产情况-->
+    <select id="selectThreeGroupWorkInfoByWorkId" resultMap="GroupWorkResultReport">
+        SELECT * FROM tab_group_work where work_id = #{workId} limit 0,3;
+    </select>
+
+    <!--报表查询对应组装车间检索条件的总数量-->
+    <select id="selectWorkNumSum" parameterType="com.ruoyi.project.production.report.domain.ComCost" resultType="com.ruoyi.project.production.report.domain.ComCost">
+        SELECT sum(product_number) as allSumNum,sum(cumulative_number) as actSumNum FROM dev_work_order
+        where company_id = #{companyId} and work_sign = 1 and wl_sign = 2
+        and start_time between #{startTime} and #{endTime}
+        <if test="productCode != null and productCode != ''">
+            and product_code = #{productCode}
+        </if>
+    </select>
+
+    <!--报表查询对应小组的工单总数-->
+    <select id="selectGroupWorkNumSum" parameterType="com.ruoyi.project.production.report.domain.ComCost" resultType="com.ruoyi.project.production.report.domain.ComCost">
+        SELECT sum(a.work_num) as allSumNum,sum(a.actual_num) as actSumNum FROM tab_group_work a,dev_work_order b where a.work_id = b.id
+        and a.company_id = #{companyId} and a.group_id = #{lineId} and b.work_sign = 1 and b.wl_sign = 2
+        <if test="productCode != null and productCode != ''">
+            and a.pn_code = #{productCode}
+        </if>
+        and b.start_time between #{startTime} and #{endTime}
+    </select>
+    
+</mapper>

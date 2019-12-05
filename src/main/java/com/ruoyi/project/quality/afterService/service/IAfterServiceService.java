@@ -1,5 +1,6 @@
 package com.ruoyi.project.quality.afterService.service;
 
+import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.project.quality.afterService.domain.AfterService;
 import com.ruoyi.project.quality.afterService.domain.AfterServiceItem;
 
@@ -35,7 +36,7 @@ public interface IAfterServiceService
      * @param afterService 售后服务信息
      * @return 结果
      */
-	public int insertAfterService(AfterService afterService);
+	public AjaxResult insertAfterService(AfterService afterService);
 	
 	/**
      * 修改售后服务
@@ -66,4 +67,11 @@ public interface IAfterServiceService
 	 * @return 结果
 	 */
 	int deleteAfterServiceById(Integer id);
+
+	/**
+	 * 用户输入建档信息查询对应数据
+	 * @param pnMain 查询信息
+	 * @return 结果
+	 */
+	AjaxResult searchPnMain(String pnMain);
 }

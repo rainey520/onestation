@@ -21,14 +21,10 @@ public class ComCost implements Serializable {
     private String productCode;
     /** 公司id */
     private Integer companyId;
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
+    /** 总计工单数 */
+    private Integer allSumNum;
+    /** 实际完成数 */
+    private Integer actSumNum;
 
     public String getStartTime() {
         return startTime;
@@ -62,6 +58,30 @@ public class ComCost implements Serializable {
         this.productCode = productCode;
     }
 
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Integer companyId) {
+        this.companyId = companyId;
+    }
+
+    public Integer getAllSumNum() {
+        return allSumNum;
+    }
+
+    public void setAllSumNum(Integer allSumNum) {
+        this.allSumNum = allSumNum;
+    }
+
+    public Integer getActSumNum() {
+        return actSumNum;
+    }
+
+    public void setActSumNum(Integer actSumNum) {
+        this.actSumNum = actSumNum;
+    }
+
     @Override
     public String toString() {
         return "ComCost{" +
@@ -69,6 +89,9 @@ public class ComCost implements Serializable {
                 ", endTime='" + endTime + '\'' +
                 ", lineId=" + lineId +
                 ", productCode='" + productCode + '\'' +
+                ", companyId=" + companyId +
+                ", allSumNum=" + allSumNum +
+                ", actSumNum=" + actSumNum +
                 '}';
     }
 }

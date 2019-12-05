@@ -20,7 +20,7 @@ public class FileSourceInfo extends BaseEntity
 	private Integer companyId;
 	/** 文件类型 0 图片，1、文件*/
 	private Integer fileType;
-	/** 保存类型 0 为公司轮播图 14 为生产报表类型*/
+	/** 保存类型 0 为公司轮播图 14 为生产报表类型 15 组装车间报表*/
 	private Integer saveType;
 	/** 保存id */
 	private Integer saveId;

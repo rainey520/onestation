@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.group.groupInfo.mapper.GroupInfoMapper">
+    
+    <resultMap type="GroupInfo" id="GroupInfoResult">
+        <result property="id"    column="id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="groupName"    column="group_name"    />
+        <result property="cTime"    column="c_time"    />
+    </resultMap>
+	
+	<sql id="selectGroupInfoVo">
+        select id, company_id, group_name, c_time from tab_group_info
+    </sql>
+	
+    <select id="selectGroupInfoList" parameterType="GroupInfo" resultMap="GroupInfoResult">
+        <include refid="selectGroupInfoVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="companyId != null "> and company_id = #{companyId}</if>
+             <if test="groupName != null  and groupName != '' "> and group_name like concat ('%',#{groupName},'%')</if>
+             <if test="cTime != null "> and c_time = #{cTime}</if>
+         </where>
+    </select>
+    
+    <select id="selectGroupInfoById" parameterType="Integer" resultMap="GroupInfoResult">
+        <include refid="selectGroupInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertGroupInfo" parameterType="GroupInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_group_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="companyId != null  ">company_id,</if>
+			<if test="groupName != null  and groupName != ''  ">group_name,</if>
+			<if test="cTime != null  ">c_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="companyId != null  ">#{companyId},</if>
+			<if test="groupName != null  and groupName != ''  ">#{groupName},</if>
+			<if test="cTime != null  ">#{cTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateGroupInfo" parameterType="GroupInfo">
+        update tab_group_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="companyId != null  ">company_id = #{companyId},</if>
+            <if test="groupName != null  and groupName != ''  ">group_name = #{groupName},</if>
+            <if test="cTime != null  ">c_time = #{cTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteGroupInfoById" parameterType="Integer">
+        delete from tab_group_info where id = #{id}
+    </delete>
+	
+    <delete id="deleteGroupInfoByIds" parameterType="String">
+        delete from tab_group_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--通过小组名称查询小组信息-->
+    <select id="selectGroupInfoByName" resultMap="GroupInfoResult">
+        <include refid="selectGroupInfoVo"/>
+        where company_id = #{companyId} and group_name = #{groupName} limit 1
+    </select>
+
+    <!--查询未分配对应工单的小组信息-->
+    <select id="selectGroupInfoNoWork" resultMap="GroupInfoResult">
+        SELECT a.* FROM tab_group_info a left join tab_group_work b on a.id = b.group_id
+        and b.work_id = #{workId} where a.company_id = #{companyId} and b.work_id is null
+    </select>
+
+    <!--查询公司小组列表-->
+    <select id="selectGroupListByComId" resultMap="GroupInfoResult">
+        <include refid="selectGroupInfoVo"/>
+        where company_id = #{companyId}
+    </select>
+    
+</mapper>

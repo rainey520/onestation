@@ -18,10 +18,10 @@
 <div>
     <div class="row dashboard-header">
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-6">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5 style="color: #006dcc">今日生产排单</h5>
+                        <h5 style="color: #006dcc">今日机加车间生产排单</h5>
                     </div>
                     <div class="ibox-content ">
                         <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="8">
@@ -34,10 +34,46 @@
                                 <th>工单状态</th>
                             </tr>
                             </thead>
-                            <tbody th:with="allWorkerToday = ${@workOrder.selectWorkOrderAllToday(#httpServletRequest.getCookies())}">
+                            <tbody th:with="allWorkerToday = ${@workOrder.selectWorkOrderAllToday(1)}">
                             <!--循环列表-->
                             <tr th:each="worker : ${allWorkerToday}">
                                 <td th:text="${worker.param1}"></td>
+                                <td th:text="${worker.workorderNumber}"></td>
+                                <td th:text="${worker.productCode}"></td>
+                                <td th:text="${worker.productName}"></td>
+                                <li th:if="${worker.workorderStatus} == 0">
+                                    <td><span class="label label-success">未开始</span>&nbsp;</td>
+                                </li>
+                                <li th:if="${worker.workorderStatus} == 1">
+                                    <td><span class="label label-primary">进行中</span>&nbsp;</td>
+                                </li>
+                                <li th:if="${worker.workorderStatus} == 2">
+                                    <td><span class="label label-danger">已完成</span>&nbsp;</td>
+                                </li>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5 style="color: #0a7e59">今日组装车间生产排单</h5>
+                    </div>
+                    <div class="ibox-content ">
+                        <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="8">
+                            <thead>
+                            <tr>
+                                <th>工单号</th>
+                                <th>产品编码</th>
+                                <th>产品名称</th>
+                                <th>工单状态</th>
+                            </tr>
+                            </thead>
+                            <tbody th:with="allWorkerToday = ${@workOrder.selectWorkOrderAllToday(2)}">
+                            <!--循环列表-->
+                            <tr th:each="worker : ${allWorkerToday}">
                                 <td th:text="${worker.workorderNumber}"></td>
                                 <td th:text="${worker.productCode}"></td>
                                 <td th:text="${worker.productName}"></td>

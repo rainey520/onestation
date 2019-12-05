@@ -102,7 +102,7 @@ public class SingleWorkOrderServiceImpl implements ISingleWorkOrderService
 		}
 		if (singleWorkOrder.getType() == 0){
 			// 车间设备配置工单
-			DevWorkOrder workOrder = devWorkOrderMapper.selectWorkOrderInfoById(user.getCompanyId(), singleWorkOrder.getWorkId());
+			DevWorkOrder workOrder = devWorkOrderMapper.selectWorkOrderInfoById(singleWorkOrder.getWorkId());
 			singleWorkOrder.setWorkCode(workOrder.getWorkorderNumber());
 		}
 		return singleWorkOrderMapper.updateSingleWorkOrder(singleWorkOrder);

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <div class="row">
+        <div class="col-sm-12 search-collapse" style="position: fixed;top: 0px">
+            <form id="user-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="dayin()"><i
+                                    class="fa fa-file-code-o"></i>&nbsp;打印</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="qr-code-div" style="display: none">
+
+    </div>
+    <div id="qr-code-img" style="margin-top: 50px">
+
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:src="@{/js/jqueryqr.js}"></script>
+<script th:src="@{/js/qrcode.js}"></script>
+<script th:inline="javascript">
+
+    $(function () {
+        initData();
+    })
+
+    function initData() {
+        $("#qr-code-div").children().remove();
+        var item = [[${itemList}]]
+        for (var i = 0; i < item.length; i++) {
+            var code = '<div id="container' + i + '" style="float: left;" >\n' +
+                '        <canvas  width="180" height="180"></canvas>\n' +
+                '    </div>'
+            $("#qr-code-div").append(code);
+        }
+        for (var i = 0; i < item.length; i++) {
+            var groupInfo = {groupId: item[i].id, groupName: item[i].groupName};
+            $('#container' + i).erweima({
+                fill: "#000",
+                size: 160,
+                text: JSON.stringify(groupInfo),
+                label: item[i].groupName,
+                fontcolor: '#3C6AD4',
+            });
+        }
+        $("#qr-code-img").children().remove();
+        $("#qr-code-div").find("canvas").each(function () {
+            var item = '<img src="' + $(this)[0].toDataURL() + '"/>';
+            $("#qr-code-img").append(item);
+        });
+    }
+
+    function dayin() {
+        var userAgent = navigator.userAgent.toLowerCase(); //取得浏览器的userAgent字符串
+        if (userAgent.indexOf("trident") > -1) {
+            $.modal.aalertWarning("请使用google或者360浏览器打印");
+            return false;
+        } else if (userAgent.indexOf('msie') > -1) {
+            var onlyChoseAlert = simpleAlert({
+                "content": "请使用Google或者360浏览器打印",
+                "buttons": {
+                    "确定": function () {
+                        onlyChoseAlert.close();
+                    }
+                }
+            })
+            $.modal.aalertWarning("请使用google或者360浏览器打印");
+            return false;
+        } else {//其它浏览器使用lodop
+            var oldstr = document.body.innerHTML;
+            var headstr = "<html><head><title></title></head><body>";
+            var footstr = "</body>";
+            //此处id换为你自己的id
+            var printData = document.getElementById("qr-code-img").innerHTML; //获得 div 里的所有 html 数据
+            document.body.innerHTML = headstr + printData + footstr;
+            window.print();
+            document.body.innerHTML = oldstr;
+            window.location.reload();
+        }
+    }
+</script>
+</body>
+
+</html>

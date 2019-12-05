@@ -37,5 +37,11 @@ public interface IImportConfigService
      * @return 结果
      */
 	public int deleteImportConfigByType(Integer cType);
-	
+
+	/**
+	 * 新增或修改导入信息
+	 * @param importConfig 导入信息
+	 * @return 结果
+	 */
+	public int saveConfig(ImportConfig importConfig);
 }

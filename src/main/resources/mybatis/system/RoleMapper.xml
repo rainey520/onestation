@@ -225,4 +225,9 @@
         SELECT * FROM sys_role where company_id = #{companyId} or role_id = 2;
     </select>
 
+    <!--通过角色id查询角色基本信息-->
+    <select id="selectRoleInfoById" resultMap="RoleResult1">
+         SELECT * FROM sys_role where role_id = #{roleId} limit 1
+    </select>
+
 </mapper> 

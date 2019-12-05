@@ -35,7 +35,7 @@
                                 <th>Work order status</th>
                             </tr>
                             </thead>
-                            <tbody th:with="allWorkerToday = ${@workOrder.selectWorkOrderAllToday(#httpServletRequest.getCookies())}">
+                            <tbody th:with="allWorkerToday = ${@workOrder.selectWorkOrderAllToday(1)}">
                             <!--循环列表-->
                             <tr th:each="worker : ${allWorkerToday}">
                                 <td th:text="${worker.param1}"></td>

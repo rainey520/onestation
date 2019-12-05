@@ -88,4 +88,11 @@ public interface AfterServiceMapper {
      * @return 结果
      */
     AfterServiceItem selectListByBatchInfo(AfterService afterService);
+
+    /**
+     * 通过工单id查询退货数量
+     * @param workId 工单id
+     * @return 结果
+     */
+    List<AfterService> selectAfterServiceByWorkId(@Param("workId") Integer workId);
 }
