@@ -59,4 +59,11 @@ public interface IGroupWorkInfoService
 	 * @return 结果
 	 */
     AjaxResult removeWorkInfoNotScan(Integer workId, String status);
+
+	/**
+	 * 通过工单id查询建档信息
+	 * @param workId 工单id
+	 * @return 结果
+	 */
+	List<GroupWorkInfo> selectGroupWorkInfoByWorkId(Integer workId);
 }

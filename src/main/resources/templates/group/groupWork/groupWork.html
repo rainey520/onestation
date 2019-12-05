@@ -51,10 +51,10 @@
         </div>
 
         <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
-            <a class="btn btn-success" onclick="add()">
+            <a class="btn btn-success" onclick="add()" shiro:hasPermission="group:groupWork:opSign">
                 <i class="fa fa-plus"></i> 添加工单
             </a>
-            <a class="btn btn-info" onclick="createMainMesInfo()" shiro:hasPermission="device:devWorkOrder:add">
+            <a class="btn btn-info" onclick="createMainMesInfo()" shiro:hasPermission="group:groupWork:opSign">
                 <i class="fa fa-credit-card"></i> 建档配置
             </a>
         </div>
@@ -86,7 +86,7 @@
     }
 
     var prefix = ctx + "group/groupWork";
-
+    var groupFlag = [[${@permission.hasPermi('group:groupWork:opSign')}]];
     $(function () {
         var options = {
             url: prefix + "/list",
@@ -158,19 +158,20 @@
                     align: 'center',
                     formatter: function (value, row, index) {
                         var actions = [];
+                        actions.push('<a class="btn btn-warning btn-xs ' + groupFlag + '" href="javascript:void(0)" onclick="exportAllPnInfo(\'' + row.id + '\',\'' + row.workorderNumber + '\')"><i></i>导出建档信息</a> ');
                         actions.push('<a class="btn btn-info btn-xs" href="javascript:void(0)" onclick="distributeWork(\'' + row.workorderNumber + '\',\'' + row.id + '\',' +
-                            '\'' + row.productNumber + '\',\'' + row.workorderStatus + '\')"><i></i>分配</a> ');
+                            '\'' + row.productNumber + '\',\'' + row.workorderStatus + '\')"><i></i>分配工单</a> ');
 
                         // 只有生产状态处于未生产的工单才允许删除
                         if (row.workorderStatus == 1) {
-                            actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="finishWork(\'' + row.id + '\',\'' + row.productNumber + '\')"><i></i>结束</a> ');
+                            actions.push('<a class="btn btn-success btn-xs ' + groupFlag + '" href="javascript:void(0)" onclick="finishWork(\'' + row.id + '\',\'' + row.productNumber + '\')"><i></i>结束</a> ');
                         } else {
-                            actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" disabled="true"><i></i>完成</a> ');
+                            actions.push('<a class="btn btn-success btn-xs ' + groupFlag + '" href="javascript:void(0)" disabled="true"><i></i>结束</a> ');
                         }
                         if (row.workorderStatus == 0) {
-                            actions.push('<a class="btn btn-danger btn-xs" href="javascript:void(0)" onclick="remove(\'' + row.id + '\')"><i></i>删除</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + groupFlag + '" href="javascript:void(0)" onclick="remove(\'' + row.id + '\')"><i></i>删除</a> ');
                         } else {
-                            actions.push('<a class="btn btn-danger btn-xs" href="javascript:void(0)" disabled="true"><i></i>删除</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + groupFlag + '" href="javascript:void(0)" disabled="true"><i></i>删除</a> ');
                         }
                         return actions.join('');
                     }
@@ -264,6 +265,21 @@
             }
         });
     }
+
+    /**
+     * 导出建档信息
+     */
+    function exportAllPnInfo(workId, workCode) {
+        $.post(prefix + "/exportAllPnInfo", {workId: workId, workCode: workCode}, function (result) {
+            if (result.code == web_status.SUCCESS) {
+                window.location.href = ctx + "common/downloadNoTime?fileName=" + result.msg + "&delete=" + true;
+            } else {
+                $.modal.alertError(result.msg);
+            }
+            $.modal.closeLoading();
+        });
+    }
+
 </script>
 </body>
 </html>

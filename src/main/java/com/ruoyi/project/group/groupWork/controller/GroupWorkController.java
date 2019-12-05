@@ -2,6 +2,7 @@ package com.ruoyi.project.group.groupWork.controller;
 
 import com.ruoyi.common.exception.BusinessException;
 import com.ruoyi.common.utils.CodeUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
@@ -10,16 +11,20 @@ import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.framework.web.page.TableDataInfo;
 import com.ruoyi.project.group.groupInfo.service.IGroupInfoService;
 import com.ruoyi.project.group.groupWork.domain.GroupWork;
+import com.ruoyi.project.group.groupWork.domain.GroupWorkInfo;
+import com.ruoyi.project.group.groupWork.service.IGroupWorkInfoService;
 import com.ruoyi.project.group.groupWork.service.IGroupWorkService;
 import com.ruoyi.project.product.importConfig.domain.ImportConfig;
 import com.ruoyi.project.product.importConfig.service.IImportConfigService;
 import com.ruoyi.project.production.devWorkOrder.domain.DevWorkOrder;
+import com.ruoyi.project.quality.mesBatch.domain.MesBatch;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +48,9 @@ public class GroupWorkController extends BaseController {
 
     @Autowired
     private IGroupInfoService groupInfoService;
+
+    @Autowired
+    private IGroupWorkInfoService groupWorkInfoService;
 
 
     @RequiresPermissions("group:groupWork:view")
@@ -234,6 +242,21 @@ public class GroupWorkController extends BaseController {
     @ResponseBody
     public AjaxResult finishTask(Integer id){
         return groupWorkService.finishTask(id);
+    }
+
+    /**
+     * 导出对应工单的产品建档信息
+     */
+    @PostMapping("/exportAllPnInfo")
+    @ResponseBody
+    public AjaxResult exportAllPnInfo(Integer workId,String workCode) {
+        String fileName = "建档信息";
+        List<GroupWorkInfo> list = groupWorkInfoService.selectGroupWorkInfoByWorkId(workId);
+        if (StringUtils.isNotEmpty(workCode)) {
+            fileName = workCode + "建档信息";
+        }
+        ExcelUtil<GroupWorkInfo> util = new ExcelUtil<GroupWorkInfo>(GroupWorkInfo.class);
+        return util.exportExcel(list, fileName);
     }
 
 }

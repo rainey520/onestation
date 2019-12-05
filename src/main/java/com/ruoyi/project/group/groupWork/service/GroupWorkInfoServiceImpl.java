@@ -1,12 +1,15 @@
 package com.ruoyi.project.group.groupWork.service;
 
 import com.ruoyi.common.support.Convert;
+import com.ruoyi.framework.jwt.JwtUtil;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.project.group.groupWork.domain.GroupWorkInfo;
 import com.ruoyi.project.group.groupWork.mapper.GroupWorkInfoMapper;
+import com.ruoyi.project.system.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -86,5 +89,19 @@ public class GroupWorkInfoServiceImpl implements IGroupWorkInfoService {
     public AjaxResult removeWorkInfoNotScan(Integer workId, String status) {
         groupWorkInfoMapper.deleteGroupWorkInfoByWorkId(workId, status);
         return AjaxResult.api(0,"请求成功",null);
+    }
+
+    /**
+     * 通过工单id查询建档信息
+     * @param workId 工单id
+     * @return 结果
+     */
+    @Override
+    public List<GroupWorkInfo> selectGroupWorkInfoByWorkId(Integer workId) {
+        User user = JwtUtil.getUser();
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        return groupWorkInfoMapper.selectGroupWorkInfoByWorkId(workId,null);
     }
 }

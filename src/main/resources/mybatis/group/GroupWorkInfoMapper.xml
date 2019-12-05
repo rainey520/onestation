@@ -95,7 +95,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!--通过工单id和扫码状态查询建档记录信息-->
     <select id="selectGroupWorkInfoByWorkId" resultMap="GroupWorkInfoResult">
-        SELECT * FROM tab_group_work_info where work_id = #{workId} and status = #{status}
+        SELECT * FROM tab_group_work_info where work_id = #{workId}
+        <if test="status != null and  status != ''">
+            and status = #{status}
+        </if>
     </select>
 
     <!--通过扫码信息查询工单信息-->

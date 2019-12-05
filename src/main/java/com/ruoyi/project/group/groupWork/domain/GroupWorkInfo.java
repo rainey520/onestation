@@ -1,8 +1,9 @@
 package com.ruoyi.project.group.groupWork.domain;
 
+import com.ruoyi.framework.aspectj.lang.annotation.Excel;
+import com.ruoyi.framework.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.framework.web.domain.BaseEntity;
 
 /**
  * 工单产品建档表 tab_group_work_info
@@ -21,6 +22,7 @@ public class GroupWorkInfo extends BaseEntity
 	/** 工单id */
 	private Integer workId;
 	/** 每个产品建档信息 */
+	@Excel(name = "产品建档信息", type = Excel.Type.EXPORT)
 	private String pnMain;
 	/** 扫码排序预留字段 */
 	private String sign;
