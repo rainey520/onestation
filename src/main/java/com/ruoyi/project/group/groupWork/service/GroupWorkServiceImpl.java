@@ -171,67 +171,62 @@ public class GroupWorkServiceImpl implements IGroupWorkService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int insertGroupWork(DevWorkOrder workOrder) {
-        try {
-            User user = JwtUtil.getUser();
-            if (user == null) {
-                return 0;
-            }
-            workOrder.setCompanyId(user.getCompanyId());
-            DevProductList product = productMapper.selectDevProductByCode(user.getCompanyId(), workOrder.getProductCode());
-            if (product == null) {
-                throw new BusinessException("工单生产的产品不存在或被删除");
-            }
-            workOrder.setMakeType(product.getSign());
-            workOrder.setProductName(product.getProductName());
-            workOrder.setProductCode(product.getProductCode());
-            workOrder.setWorkPrice(product.getLabourPrice());
-            workOrder.setProductModel(product.getProductModel());
-            workOrder.setCreateBy(user.getUserName());
-            workOrderMapper.insertDevWorkOrder(workOrder);
-
-            /**
-             * 生成建档信息
-             */
-            // 查询配置的规则信息
-            ImportConfig config = configMapper.selectImportConfigByType(user.getCompanyId(), 4);
-            if (config == null) {
-                throw new BusinessException("请先配置建档规则");
-            }
-            // 生成建档信息
-            String mainInfo = "";
-            GroupWorkInfo workInfo = null;
-
-            if (workOrder.getProductNumber() != null && workOrder.getProductNumber() > 0) {
-                List<GroupWorkInfo> workInfoList = new ArrayList<GroupWorkInfo>();
-                int totalNum = workOrder.getProductNumber();
-                for (int i = 0; i < totalNum; i++) {
-                    mainInfo = config.getConRule() + CodeUtils.getRandomStr(config.getCon1());
-                    // 查询建档信息是否存在
-                    workInfo = workInfoMapper.selectMesBatchByMainInfo(mainInfo);
-                    int index = 0;
-                    while (workInfo != null && index < 10) {
-                        mainInfo = config.getConRule() + CodeUtils.getRandomStr(config.getCon1());
-                        workInfo = workInfoMapper.selectMesBatchByMainInfo(mainInfo);
-                        index++;
-                    }
-                    if (workInfo != null) {
-                        throw new BusinessException("下单失败");
-                    }
-                    workInfo = new GroupWorkInfo();
-                    workInfo.setPnMain(mainInfo);
-                    workInfo.setWorkId(workOrder.getId());
-                    workInfoList.add(workInfo);
-                    workInfoMapper.insertGroupWorkInfo(workInfo);
-                }
-                // if (workInfoList.size() > 0) {
-                //     workInfoMapper.insertBatchGroupWorkInfo(workInfoList);
-                // }
-            }
-            return 1;
-        } catch (BusinessException e) {
-            LOGGER.error("新增小组工单失败：" + e.getMessage());
+        User user = JwtUtil.getUser();
+        if (user == null) {
             return 0;
         }
+        workOrder.setCompanyId(user.getCompanyId());
+        DevProductList product = productMapper.selectDevProductByCode(user.getCompanyId(), workOrder.getProductCode());
+        if (product == null) {
+            throw new BusinessException("工单生产的产品不存在或被删除");
+        }
+        workOrder.setMakeType(product.getSign());
+        workOrder.setProductName(product.getProductName());
+        workOrder.setProductCode(product.getProductCode());
+        workOrder.setWorkPrice(product.getLabourPrice());
+        workOrder.setProductModel(product.getProductModel());
+        workOrder.setCreateBy(user.getUserName());
+        workOrderMapper.insertDevWorkOrder(workOrder);
+
+        /**
+         * 生成建档信息
+         */
+        // 查询配置的规则信息
+        ImportConfig config = configMapper.selectImportConfigByType(user.getCompanyId(), 4);
+        if (config == null) {
+            throw new BusinessException("请先配置建档规则");
+        }
+        // 生成建档信息
+        String mainInfo = "";
+        GroupWorkInfo workInfo = null;
+
+        if (workOrder.getProductNumber() != null && workOrder.getProductNumber() > 0) {
+            List<GroupWorkInfo> workInfoList = new ArrayList<GroupWorkInfo>();
+            int totalNum = workOrder.getProductNumber();
+            for (int i = 0; i < totalNum; i++) {
+                mainInfo = config.getConRule() + CodeUtils.getRandomStr(config.getCon1());
+                // 查询建档信息是否存在
+                workInfo = workInfoMapper.selectMesBatchByMainInfo(mainInfo);
+                int index = 0;
+                while (workInfo != null && index < 10) {
+                    mainInfo = config.getConRule() + CodeUtils.getRandomStr(config.getCon1());
+                    workInfo = workInfoMapper.selectMesBatchByMainInfo(mainInfo);
+                    index++;
+                }
+                if (workInfo != null) {
+                    throw new BusinessException("下单失败");
+                }
+                workInfo = new GroupWorkInfo();
+                workInfo.setPnMain(mainInfo);
+                workInfo.setWorkId(workOrder.getId());
+                workInfoList.add(workInfo);
+                workInfoMapper.insertGroupWorkInfo(workInfo);
+            }
+            // if (workInfoList.size() > 0) {
+            //     workInfoMapper.insertBatchGroupWorkInfo(workInfoList);
+            // }
+        }
+        return 1;
     }
 
     /**
