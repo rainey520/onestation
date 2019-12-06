@@ -9,8 +9,6 @@ import com.ruoyi.common.utils.PasswordUtil;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.aspectj.lang.annotation.DataScope;
-import com.ruoyi.framework.aspectj.lang.annotation.DataSource;
-import com.ruoyi.framework.aspectj.lang.enums.DataSourceType;
 import com.ruoyi.framework.jwt.JwtUtil;
 import com.ruoyi.project.device.devCompany.domain.DevCompany;
 import com.ruoyi.project.device.devCompany.mapper.DevCompanyMapper;
@@ -96,7 +94,6 @@ public class UserServiceImpl implements IUserService {
      * @return 用户对象信息
      */
     @Override
-    @DataSource(value = DataSourceType.SLAVE)
     public User selectUserByLoginName(String userName) {
         return userMapper.selectUserByLoginName(userName);
     }
