@@ -102,4 +102,11 @@ public interface GroupWorkInfoMapper {
      * @return 结果
      */
     DevWorkOrder selectWorkInfoByScanInfo(@Param("pnMain") String pnMain);
+
+    /**
+     * 批量新增建档信息
+     * @param workInfoList 建档信息列表
+     * @return 结果
+     */
+    int insertBatchGroupWorkInfo(List<GroupWorkInfo> workInfoList);
 }

@@ -200,7 +200,9 @@ public class GroupWorkServiceImpl implements IGroupWorkService {
             // 生成建档信息
             String mainInfo = "";
             GroupWorkInfo workInfo = null;
+
             if (workOrder.getProductNumber() != null && workOrder.getProductNumber() > 0) {
+                List<GroupWorkInfo> workInfoList = new ArrayList<GroupWorkInfo>();
                 int totalNum = workOrder.getProductNumber();
                 for (int i = 0; i < totalNum; i++) {
                     mainInfo = config.getConRule() + CodeUtils.getRandomStr(config.getCon1());
@@ -218,8 +220,12 @@ public class GroupWorkServiceImpl implements IGroupWorkService {
                     workInfo = new GroupWorkInfo();
                     workInfo.setPnMain(mainInfo);
                     workInfo.setWorkId(workOrder.getId());
+                    workInfoList.add(workInfo);
                     workInfoMapper.insertGroupWorkInfo(workInfo);
                 }
+                // if (workInfoList.size() > 0) {
+                //     workInfoMapper.insertBatchGroupWorkInfo(workInfoList);
+                // }
             }
             return 1;
         } catch (BusinessException e) {

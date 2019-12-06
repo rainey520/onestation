@@ -107,4 +107,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         b.cumulative_number as cumulativeNumber, b.start_time as startTime FROM tab_group_work_info a,dev_work_order b
         where a.work_id = b. id and a.pn_main = #{pnMain} limit 1
     </select>
+
+    <!--批量新增建档信息-->
+    <insert id="insertBatchGroupWorkInfo">
+        insert into tab_group_work_info(work_id, pn_main) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.workId},#{item.pnMain})
+        </foreach>
+    </insert>
 </mapper>
