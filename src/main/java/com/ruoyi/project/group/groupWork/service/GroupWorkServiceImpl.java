@@ -366,6 +366,9 @@ public class GroupWorkServiceImpl implements IGroupWorkService {
         if (workOrder == null) {
             return AjaxResult.api(1, "工单不存在或被删除", null);
         }
+        if (!WorkConstants.WORK_STATUS_STARTING.equals(workOrder.getWorkorderStatus())) {
+            return AjaxResult.api(1, "未开始或已经结束的工单不能结束", null);
+        }
         // 查询角色信息
         UserRole userRole = groupWorkMapper.selectWorkAuth(user.getUserId(), workOrder.getLineId());
         if (userRole == null) {
@@ -408,6 +411,7 @@ public class GroupWorkServiceImpl implements IGroupWorkService {
 
     /**
      * 小组结束对应工单任务
+     *
      * @param id 工单小组关联id
      * @return 结果
      */

@@ -165,6 +165,8 @@
                         // 只有生产状态处于未生产的工单才允许删除
                         if (row.workorderStatus == 1) {
                             actions.push('<a class="btn btn-success btn-xs ' + groupFlag + '" href="javascript:void(0)" onclick="finishWork(\'' + row.id + '\',\'' + row.productNumber + '\')"><i></i>结束</a> ');
+                        } else if (row.workorderStatus == 2) {
+                            actions.push('<a class="btn btn-success btn-xs ' + groupFlag + '" href="javascript:void(0)" disabled="true"><i></i>完成</a> ');
                         } else {
                             actions.push('<a class="btn btn-success btn-xs ' + groupFlag + '" href="javascript:void(0)" disabled="true"><i></i>结束</a> ');
                         }
